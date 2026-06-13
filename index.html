@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>不動産売却 収支計算ツール | ViVi不動産株式会社</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+/* ============================================================
+   カラーパレット(オレンジ基調・落ち着いた明るい印象)
+============================================================ */
+:root{
+  --orange:#e3823c;        /* メインのオレンジ(やや渋め) */
+  --orange-soft:#f0a866;   /* 明るいオレンジ */
+  --orange-pale:#fbeede;   /* ごく淡いオレンジ背景 */
+  --orange-line:#f0d9bf;    /* 罫線・枠 */
+  --cream:#fffaf2;          /* 温かみのあるオフホワイト */
+  --ink:#403831;            /* 文字色(黒すぎない温かいダーク) */
+  --ink-soft:#6f6359;       /* サブ文字 */
+  --brown:#9a6a35;          /* キャラ輪郭に合わせた茶(アクセント) */
+  --navy:#33506f;           /* 引き締め用のソフトネイビー(キャラのバンダナ) */
+  --red:#c0563b;
+  --line:#ece3d6;
+  --shadow:0 2px 10px rgba(154,106,53,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+body{
+  font-family:"游ゴシック","Yu Gothic","Noto Sans JP","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  background:#f4ede2;
+  color:var(--ink);
+  line-height:1.75;
+}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink);}
+
+/* ============================================================
+   入力モード
+============================================================ */
+#app{max-width:920px;margin:0 auto;padding:24px 16px 90px;}
+
+.app-header{
+  background:linear-gradient(120deg,var(--orange) 0%,var(--orange-soft) 100%);
+  color:#fff;border-radius:14px;
+  padding:20px 26px;margin-bottom:22px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  box-shadow:var(--shadow);
+}
+.app-header h1{font-size:21px;letter-spacing:.04em;}
+.app-header .sub{font-size:12px;opacity:.92;margin-top:2px;}
+.header-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.header-btns button{
+  background:rgba(255,255,255,.95);color:var(--orange);border:none;border-radius:8px;
+  padding:9px 15px;font-size:13px;font-weight:bold;transition:.15s;
+}
+.header-btns button:hover{background:#fff;transform:translateY(-1px);}
+
+.card{
+  background:#fff;border-radius:14px;padding:22px 26px;margin-bottom:18px;
+  box-shadow:var(--shadow);
+}
+.card h2{
+  font-size:16px;color:var(--brown);border-left:5px solid var(--orange);
+  padding-left:11px;margin-bottom:16px;letter-spacing:.02em;
+}
+.card h2 .step{
+  display:inline-block;background:var(--orange);color:#fff;font-size:11px;
+  border-radius:5px;padding:2px 9px;margin-right:8px;vertical-align:2px;font-weight:bold;
+}
+.card .card-sub{font-size:12px;color:var(--ink-soft);margin:-8px 0 14px;}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 22px;}
+.form-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.form-row{display:flex;flex-direction:column;gap:5px;}
+.form-row.wide{grid-column:1 / -1;}
+.form-row label{font-size:12px;font-weight:bold;color:#5a4f44;}
+.form-row label .req{color:var(--red);}
+.form-row input,.form-row select{
+  border:1.5px solid var(--orange-line);border-radius:8px;padding:9px 11px;background:var(--cream);
+  transition:.15s;
+}
+.form-row input:focus,.form-row select:focus{
+  outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(227,130,60,.12);
+}
+.unit-wrap{display:flex;align-items:center;gap:6px;}
+.unit-wrap input{flex:1;text-align:right;}
+.unit-wrap .unit{font-size:13px;color:var(--ink-soft);white-space:nowrap;}
+.hint{font-size:11.5px;color:var(--ink-soft);}
+
+/* 設定保存ボタン */
+.save-row{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap;}
+#saveStaffBtn{
+  background:var(--brown);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:bold;
+}
+#saveStaffBtn:hover{background:#85592c;}
+#saveStaffStatus{font-size:12.5px;color:var(--orange);font-weight:bold;opacity:0;transition:.3s;}
+#saveStaffStatus.show{opacity:1;}
+
+/* 査定書PDF読み込み */
+#dropZone{
+  border:2.5px dashed var(--orange-line);border-radius:10px;background:var(--orange-pale);
+  padding:26px 20px;text-align:center;color:var(--ink-soft);transition:.15s;
+}
+#dropZone.dragover{border-color:var(--orange);background:#fdeede;}
+#dropZone strong{color:var(--brown);font-size:15px;}
+#dropZone .or{font-size:12px;margin:6px 0;}
+#dropZone button{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:bold;}
+#pdfStatus{margin-top:12px;font-size:13px;}
+#pdfStatus .warn-box{background:#fdecea;border:1.5px solid var(--red);border-radius:8px;padding:12px 14px;color:#8c2b22;font-size:13px;line-height:1.6;}
+#pdfStatus .ok-box{background:#eef9f1;border:1.5px solid #2e9e5b;border-radius:8px;padding:10px 14px;color:#1d6b3c;font-size:13px;}
+#extractResultList{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;}
+#extractResultList .tag{font-size:11.5px;border-radius:20px;padding:2px 11px;border:1px solid;}
+#extractResultList .tag.ok{color:#1d6b3c;border-color:#2e9e5b;background:#eef9f1;}
+#extractResultList .tag.miss{color:#8a6d00;border-color:#e0b400;background:#fffbe0;}
+.extract-legend{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+.extract-legend .ok{color:#2e9e5b;font-weight:bold;}
+.extract-legend .miss{color:#b08d00;font-weight:bold;}
+/* 抽出できた=緑/できなかった=黄 のハイライト(フォーカス時以外) */
+input.extract-ok{border-color:#7bc59a;background:#f0faf3;}
+input.extract-miss{border-color:#e0b400;background:#fffbe0;}
+
+/* トグルスイッチ */
+.toggle-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.switch{position:relative;display:inline-block;width:56px;height:30px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;inset:0;background:#cdbfae;border-radius:30px;transition:.2s;}
+.slider:before{
+  content:"";position:absolute;height:24px;width:24px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.switch input:checked + .slider{background:var(--orange);}
+.switch input:checked + .slider:before{transform:translateX(26px);}
+.toggle-label{font-size:14px;font-weight:bold;}
+#discountStateText{color:var(--orange);}
+
+/* 諸経費 */
+#expenseRows .exp-row{
+  display:grid;grid-template-columns:170px 1fr 140px 92px 34px;gap:8px;align-items:center;margin-bottom:8px;
+}
+#expenseRows .exp-row input,#expenseRows .exp-row select{
+  border:1.5px solid var(--orange-line);border-radius:8px;padding:8px 10px;background:var(--cream);
+}
+#expenseRows .exp-row input[type=number]{text-align:right;}
+#expenseRows .exp-row .kaitori-exempt{
+  display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ink-soft);white-space:nowrap;
+}
+#expenseRows .exp-row .del-btn{
+  background:var(--orange-pale);border:none;border-radius:8px;height:36px;color:var(--red);font-weight:bold;
+}
+#addExpenseBtn{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:bold;}
+.exp-head{
+  display:grid;grid-template-columns:170px 1fr 140px 92px 34px;gap:8px;font-size:11px;color:var(--ink-soft);margin-bottom:5px;
+}
+
+/* 計算結果テーブル(入力モード・リアルタイム) */
+#calcSummary{overflow-x:auto;}
+#calcSummary table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px;}
+#calcSummary th,#calcSummary td{border:1px solid var(--line);padding:9px 11px;text-align:right;}
+#calcSummary th{background:var(--orange);color:#fff;text-align:center;font-weight:bold;font-size:12px;}
+#calcSummary td:first-child{text-align:left;background:var(--orange-pale);font-weight:bold;font-size:12px;color:var(--brown);}
+#calcSummary .fee-zero{color:var(--red);font-weight:bold;}
+#calcSummary .net-row td{font-weight:bold;color:var(--orange);font-size:17px;background:#fff6ec;}
+#calcSummary .net-row td:first-child{color:var(--brown);font-size:13px;}
+#calcSummary .empty-note{color:var(--ink-soft);font-size:13px;}
+.discount-badge{
+  display:inline-block;background:var(--orange);color:#fff;border-radius:20px;font-size:11px;padding:2px 12px;
+}
+.summary-note{font-size:11.5px;color:var(--ink-soft);line-height:1.7;margin-top:12px;}
+
+.preview-btn-area{text-align:center;margin-top:28px;}
+#previewBtn{
+  background:var(--orange);color:#fff;border:none;border-radius:50px;
+  padding:16px 56px;font-size:18px;font-weight:bold;letter-spacing:.08em;
+  box-shadow:0 4px 14px rgba(227,130,60,.4);transition:.15s;
+}
+#previewBtn:hover{background:#d6722e;transform:translateY(-2px);}
+
+/* ============================================================
+   プレビューモード(売主様提示・PDF出力)
+============================================================ */
+#previewMode{display:none;}
+body.preview #app{display:none;}
+body.preview #previewMode{display:block;}
+
+#previewToolbar{
+  position:sticky;top:0;z-index:100;
+  background:linear-gradient(120deg,var(--orange) 0%,var(--orange-soft) 100%);color:#fff;
+  padding:11px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+#previewToolbar button{border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:bold;}
+#backBtn{background:#fff;color:var(--orange);}
+#printBtn{background:var(--brown);color:#fff;}
+#previewToolbar .print-hint{font-size:11.5px;opacity:.9;}
+
+#pages{padding:22px 0 60px;}
+.page{
+  width:210mm;height:296mm;background:#fff;margin:0 auto 18px;
+  box-shadow:0 3px 16px rgba(0,0,0,.22);position:relative;overflow:hidden;
+  padding:16mm 16mm 14mm;display:flex;flex-direction:column;
+}
+
+/* キャラクター画像 */
+.imgbox{position:relative;display:flex;align-items:center;justify-content:center;}
+.imgbox img{max-width:100%;max-height:100%;object-fit:contain;}
+.imgbox.missing img{display:none;}
+
+/* ViViロゴ(テキスト) */
+.vivi-logo{
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:var(--navy);color:#fff;border-radius:2mm;padding:2.5mm 4mm;
+}
+.vivi-logo .e{font-size:6.5pt;letter-spacing:.3em;opacity:.85;}
+.vivi-logo .v{font-size:14pt;font-weight:bold;letter-spacing:.02em;}
+
+/* ページ見出し帯 */
+.sec-head{
+  background:linear-gradient(120deg,var(--orange) 0%,var(--orange-soft) 100%);color:#fff;
+  padding:4mm 7mm;border-radius:2.5mm;margin-bottom:7mm;display:flex;align-items:baseline;gap:5mm;
+}
+.sec-head .no{font-size:10pt;color:#fff;opacity:.85;font-weight:bold;letter-spacing:.1em;white-space:nowrap;}
+.sec-head h2{font-size:17pt;letter-spacing:.06em;font-weight:bold;}
+
+.page-foot{
+  position:absolute;bottom:7mm;left:16mm;right:16mm;display:flex;justify-content:space-between;align-items:center;
+  font-size:8pt;color:#a99;border-top:.4mm solid var(--orange-line);padding-top:2mm;
+}
+.page-foot .brand{color:var(--brown);font-weight:bold;letter-spacing:.08em;}
+
+/* --- P1 ヘッダー(お客様名+物件) --- */
+.cover-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8mm;margin-bottom:6mm;}
+.cover-cust .greet{font-size:11pt;color:var(--ink-soft);}
+.cover-cust .cname{font-size:21pt;font-weight:bold;color:var(--brown);letter-spacing:.03em;}
+.cover-cust .bar{display:block;width:34mm;height:1.6mm;margin-top:2mm;border-radius:1mm;
+  background:linear-gradient(to right,var(--orange) 0 60%,var(--navy) 60% 100%);}
+.cover-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:2mm;}
+.cover-char{width:30mm;height:36mm;}
+
+.cover-title{text-align:center;margin:2mm 0 7mm;}
+.cover-title .main{font-size:26pt;font-weight:bold;color:var(--orange);letter-spacing:.12em;}
+.cover-title .sub{font-size:11pt;color:var(--ink-soft);letter-spacing:.1em;margin-top:1mm;}
+
+.prop-strip{
+  background:var(--orange-pale);border-radius:2.5mm;padding:3.5mm 6mm;font-size:9.5pt;color:#6a5c4d;
+  display:flex;flex-wrap:wrap;gap:2mm 8mm;margin-bottom:6mm;
+}
+.prop-strip b{color:var(--brown);}
+
+/* 収支比較表(プレビュー) */
+.sim-wrap{flex:1;}
+.sim-table{width:100%;border-collapse:collapse;font-size:10pt;}
+.sim-table th,.sim-table td{border:.4mm solid var(--orange-line);padding:3mm;text-align:right;}
+.sim-table thead th{background:var(--orange);color:#fff;text-align:center;font-size:10.5pt;}
+.sim-table thead th.rec{background:var(--brown);}
+.sim-table .rowhead{background:var(--orange-pale);font-weight:bold;text-align:left;width:34mm;font-size:9.5pt;color:var(--brown);}
+.sim-table .p-big{font-size:12pt;font-weight:bold;color:var(--navy);}
+.sim-table .fee-zero{color:var(--red);font-weight:bold;}
+.sim-table tr.net-row td{background:#fff2e2;color:var(--orange);font-weight:bold;font-size:18pt;padding:4.5mm 3mm;}
+.sim-table tr.net-row td.rowhead{font-size:11pt;color:var(--brown);background:var(--orange-pale);}
+.sim-note{font-size:8.5pt;color:var(--ink-soft);margin-top:5mm;line-height:1.7;}
+.disc-line{margin-top:3mm;font-size:9pt;color:var(--brown);font-weight:bold;}
+
+/* --- P2 税金 --- */
+.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:4mm;}
+.tax-char{width:32mm;height:36mm;flex-shrink:0;}
+.tax-lead{font-size:9.5pt;line-height:1.8;color:#4a4036;}
+.tax-lead .em{color:var(--orange);font-weight:bold;}
+
+.tax-formula{
+  background:var(--orange-pale);border-radius:2.5mm;padding:3.5mm 5mm;text-align:center;
+  font-size:11.5pt;font-weight:bold;color:var(--brown);margin-bottom:4.5mm;letter-spacing:.02em;
+}
+.tax-formula small{display:block;font-size:8.5pt;font-weight:normal;color:var(--ink-soft);margin-top:1.5mm;}
+
+.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;}
+.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:3.5mm 4.5mm;background:#fffdf9;}
+.tax-box.full{grid-column:1 / -1;}
+.tax-box h3{font-size:10.5pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.6mm 3.5mm;margin-bottom:2mm;}
+.tax-box.hl h3{background:var(--orange);}
+.tax-box p,.tax-box li{font-size:9pt;line-height:1.7;color:#4a4036;}
+.tax-box ul{padding-left:5mm;margin-top:1mm;}
+.tax-box .amt{color:var(--orange);font-weight:bold;}
+.tax-rate{display:flex;gap:4mm;margin-top:2.5mm;}
+.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:2.5mm;text-align:center;font-size:8.5pt;color:#5a4f44;}
+.tax-rate b{display:block;font-size:15pt;color:var(--orange);}
+.tax-caution{
+  margin-top:4mm;background:#fdf3ea;border:.4mm solid var(--orange-line);border-left:1.5mm solid var(--orange);
+  border-radius:0 2mm 2mm 0;padding:2.5mm 5mm;font-size:8.5pt;color:#7a5230;line-height:1.65;
+}
+
+/* 連絡先(margin-top:autoで下寄せしつつ、絶対配置フッターと重ならないよう下マージンを確保) */
+.contact-grid{display:flex;gap:6mm;margin-top:auto;margin-bottom:7mm;align-items:stretch;}
+.contact-staff{background:var(--navy);color:#fff;border-radius:3mm;padding:4mm 5.5mm;flex:1;}
+.contact-staff .role{font-size:8.5pt;opacity:.85;}
+.contact-staff .nm{font-size:15pt;font-weight:bold;margin:1mm 0 1.5mm;}
+.contact-staff .line{font-size:9pt;line-height:1.8;}
+.contact-staff .line b{color:var(--orange-soft);}
+.contact-co{
+  background:var(--orange-pale);border-radius:3mm;padding:4mm 5.5mm;flex:1.2;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.contact-co .co-name{font-size:13pt;font-weight:bold;color:var(--brown);margin-bottom:1mm;}
+.contact-co .line{font-size:9pt;line-height:1.8;color:#4a4036;}
+.contact-co .free{font-size:15pt;font-weight:bold;color:var(--orange);}
+
+/* ============================================================
+   印刷
+============================================================ */
+@page{size:A4 portrait;margin:0;}
+@media print{
+  body{background:#fff;}
+  #app{display:none !important;}
+  #previewMode{display:block !important;}
+  #previewToolbar{display:none !important;}
+  #pages{padding:0;}
+  .page{margin:0;box-shadow:none;page-break-after:always;width:210mm;height:296mm;}
+  .page:last-child{page-break-after:auto;}
+  .imgbox.missing{visibility:hidden;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     入力モード(担当者用)
+============================================================ -->
+<div id="app">
+  <div class="app-header">
+    <div>
+      <h1>不動産売却 収支計算ツール</h1>
+      <div class="sub">ViVi不動産株式会社|仲介手数料・印紙税・手取り額シミュレーション</div>
+    </div>
+    <div class="header-btns">
+      <button id="exportBtn" type="button">💾 JSON保存</button>
+      <button id="importBtn" type="button">📂 JSON読込</button>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+    </div>
+  </div>
+
+  <!-- 担当者・会社設定 -->
+  <div class="card">
+    <h2>⚙ 担当者・会社設定</h2>
+    <p class="card-sub">提案書(PDF)の連絡先欄に表示されます。「設定を保存」を押すと、このブラウザに記憶され次回から自動入力されます。</p>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="companyName">会社名</label>
+        <input type="text" id="companyName" value="ViVi不動産株式会社">
+      </div>
+      <div class="form-row">
+        <label for="license">免許番号</label>
+        <input type="text" id="license" value="富山県知事(4)第2832号">
+      </div>
+      <div class="form-row">
+        <label for="staffName">担当者名</label>
+        <input type="text" id="staffName" value="富永 奈央">
+      </div>
+      <div class="form-row">
+        <label for="staffRole">役職(任意)</label>
+        <input type="text" id="staffRole" placeholder="例:営業担当">
+      </div>
+      <div class="form-row">
+        <label for="freeDial">フリーダイヤル</label>
+        <input type="text" id="freeDial" value="0120-145-151">
+      </div>
+      <div class="form-row">
+        <label for="staffTel">担当携帯</label>
+        <input type="text" id="staffTel" value="080-5857-7819">
+      </div>
+      <div class="form-row">
+        <label for="mail">メールアドレス</label>
+        <input type="text" id="mail" value="n-tominaga@vivi-f.jp">
+      </div>
+      <div class="form-row">
+        <label for="zip">郵便番号</label>
+        <input type="text" id="zip" value="〒930-0955">
+      </div>
+      <div class="form-row wide">
+        <label for="companyAddr">会社住所</label>
+        <input type="text" id="companyAddr" value="富山県富山市天正寺1076">
+      </div>
+    </div>
+    <div class="save-row">
+      <button id="saveStaffBtn" type="button">担当者設定を保存</button>
+      <span id="saveStaffStatus">✓ 保存しました</span>
+    </div>
+  </div>
+
+  <!-- 査定書PDF読み込み -->
+  <div class="card">
+    <h2>📄 査定書PDFの読み込み(任意)</h2>
+    <p class="card-sub">査定ツールから出力したPDFをドロップすると、お客様名・物件名・所在地・各価格を自動入力します。抽出後も手で修正できます。</p>
+    <div id="dropZone">
+      <strong>ここに査定報告書PDFをドラッグ&ドロップ</strong>
+      <div class="or">または</div>
+      <button type="button" id="pdfPickBtn">ファイルを選択</button>
+      <input type="file" id="pdfFile" accept="application/pdf" style="display:none">
+    </div>
+    <div id="pdfStatus"></div>
+    <div id="extractResultList"></div>
+    <div class="extract-legend">
+      抽出できた項目は <span class="ok">緑のチェック ✓</span>、できなかった項目は <span class="miss">黄色のハイライト</span> で表示されます。すべて手動で修正できます。
+    </div>
+  </div>
+
+  <!-- お客様・物件情報 -->
+  <div class="card">
+    <h2>🏠 お客様・物件情報</h2>
+    <p class="card-sub">提案書の表紙に表示されます(物件ごとに入力。設定保存の対象外です)。</p>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="customerName">お客様名(様は不要)</label>
+        <input type="text" id="customerName" placeholder="例:朝日ガスエナジー株式会社">
+      </div>
+      <div class="form-row">
+        <label for="propertyName">物件名</label>
+        <input type="text" id="propertyName" placeholder="例:ダイアパレス城南公園 402号">
+      </div>
+      <div class="form-row wide">
+        <label for="address">所在地(任意)</label>
+        <input type="text" id="address" placeholder="例:富山県富山市太郎丸西町1丁目15-3">
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP1 価格 -->
+  <div class="card">
+    <h2><span class="step">STEP 1</span>売買価格(プラン別・万円)</h2>
+    <p class="card-sub">入力した価格の列だけが比較表に表示されます。1つだけ入力すれば単独計算としても使えます。</p>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="priceChallenge">チャレンジ価格(上限狙い)</label>
+        <div class="unit-wrap"><input type="number" id="priceChallenge" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-row">
+        <label for="priceTeian">売出提案価格</label>
+        <div class="unit-wrap"><input type="number" id="priceTeian" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-row">
+        <label for="priceSatei">査定価格(マーケット価格)</label>
+        <div class="unit-wrap"><input type="number" id="priceSatei" min="0"><span class="unit">万円</span></div>
+      </div>
+      <div class="form-row">
+        <label for="priceKaitori">買取価格(保証価格・手数料0円)</label>
+        <div class="unit-wrap"><input type="number" id="priceKaitori" min="0"><span class="unit">万円</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP2 手数料 -->
+  <div class="card">
+    <h2><span class="step">STEP 2</span>手数料設定</h2>
+    <div class="toggle-row">
+      <label class="switch"><input type="checkbox" id="discountToggle"><span class="slider"></span></label>
+      <span class="toggle-label">専任媒介 仲介手数料5%割引:<span id="discountStateText">適用しない</span></span>
+    </div>
+    <p class="hint" style="margin-top:8px;">
+      手数料計算:売買価格800万円以下は330,000円(税込・低廉な空家等の媒介特例)/800万円超は(価格×3%+6万円)×1.10。割引適用時は税込額×0.95(円未満切り捨て)。買取プランは仲介手数料0円。
+    </p>
+  </div>
+
+  <!-- STEP3 諸経費 -->
+  <div class="card">
+    <h2><span class="step">STEP 3</span>諸経費</h2>
+    <div class="exp-head">
+      <span>プリセット</span><span>項目名</span><span>金額(円)</span><span>買取時は不要</span><span></span>
+    </div>
+    <div id="expenseRows"></div>
+    <button id="addExpenseBtn" type="button">+ 行を追加</button>
+    <p class="hint" style="margin-top:8px;">「買取時は不要」にチェックした項目は、買取プランの諸経費から除外されます(クリーニング費用・補修費用など)。</p>
+  </div>
+
+  <!-- STEP4 ローン残債 -->
+  <div class="card">
+    <h2><span class="step">STEP 4</span>住宅ローン残債(任意)</h2>
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="loanBalance">残債額(空欄なら手取りから差し引きません)</label>
+        <div class="unit-wrap"><input type="number" id="loanBalance" min="0" placeholder="例:5000000"><span class="unit">円</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 計算結果プレビュー -->
+  <div class="card">
+    <h2>📊 収支計算結果(リアルタイム)</h2>
+    <div id="calcSummary"></div>
+    <p class="summary-note">上記金額はあくまでも概算です。手取り額を保証するものではありません。譲渡所得税は別途かかる場合があります。</p>
+  </div>
+
+  <div class="preview-btn-area">
+    <button id="previewBtn" type="button">売主様提示用PDFをプレビュー ▶</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     プレビューモード(売主様提示・PDF出力)
+============================================================ -->
+<div id="previewMode">
+  <div id="previewToolbar">
+    <button id="backBtn" type="button">◀ 入力に戻る</button>
+    <button id="printBtn" type="button">🖨 PDFに保存 / 印刷</button>
+    <span class="print-hint">※印刷ダイアログで「背景のグラフィック」を有効に、用紙A4・余白「なし」を推奨</span>
+  </div>
+  <div id="pages"></div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   定数・画像
+============================================================ */
+// フォルダ内のキャラクター画像(ご案内=表紙、教授=税金説明)
+const CHAR_GUIDE = "02ご案内(透過).png";
+const CHAR_PROF  = "07教授(透過）.gif";   // ※ファイル名は全角カッコ
+
+const EXPENSE_PRESETS = [
+  "抵当権抹消費用","繰り上げ返済手数料","住所変更登記費用","相続登記費用",
+  "境界確定費用","建物解体費用","建物滅失登記費用","荷物撤去・処分費用",
+  "クリーニング費用","補修費用","雑費","その他(自由入力)"
+];
+const KAITORI_EXEMPT_DEFAULT = new Set(["クリーニング費用","補修費用","荷物撤去・処分費用","境界確定費用"]);
+
+const STAFF_KEY = "viviSettlementStaff"; // 担当者設定の保存先(localStorage)
+const STAFF_FIELDS = ["companyName","license","staffName","staffRole","freeDial","staffTel","mail","zip","companyAddr"];
+
+/* ============================================================
+   収支計算エンジン(calc-test.js で検算済みのロジック)
+============================================================ */
+function calcBrokerageFee(price, discount, isKaitori){
+  if (isKaitori) return 0;
+  if (!price || price <= 0) return 0;
+  let fee;
+  if (price <= 8000000) {
+    fee = 330000; // 低廉な空家等の媒介特例(税込・固定)
+  } else {
+    fee = Math.floor((price * 0.03 + 60000) * 1.10);
+  }
+  if (discount) fee = Math.floor(fee * 0.95);
+  return fee;
+}
+function calcStampTax(price){
+  if (!price || price <= 100000) return 0;
+  if (price <= 500000) return 200;
+  if (price <= 1000000) return 500;
+  if (price <= 5000000) return 1000;
+  if (price <= 10000000) return 5000;
+  if (price <= 50000000) return 10000;
+  if (price <= 100000000) return 30000;
+  if (price <= 500000000) return 60000;
+  return 160000;
+}
+const yen = n => n.toLocaleString("ja-JP") + "円";
+
+/* ============================================================
+   フォーム状態の収集
+============================================================ */
+const $ = id => document.getElementById(id);
+const val = id => $(id).value.trim();
+const num = id => { const v = parseFloat($(id).value); return isNaN(v) ? 0 : v; };
+
+function getExpenses(){
+  return [...document.querySelectorAll("#expenseRows .exp-row")].map(row => ({
+    name: row.querySelector(".exp-name").value.trim(),
+    amount: parseFloat(row.querySelector(".exp-amount").value) || 0,
+    kaitoriExempt: row.querySelector(".exp-exempt").checked,
+  })).filter(e => e.name || e.amount > 0);
+}
+
+function getState(){
+  return {
+    customerName: val("customerName"),
+    propertyName: val("propertyName"),
+    address: val("address"),
+    // 価格は内部では円で保持(入力は万円)
+    priceChallenge: num("priceChallenge") * 10000,
+    priceTeian: num("priceTeian") * 10000,
+    priceSatei: num("priceSatei") * 10000,
+    priceKaitori: num("priceKaitori") * 10000,
+    discount: $("discountToggle").checked,
+    expenses: getExpenses(),
+    loanBalance: num("loanBalance"),
+  };
+}
+
+function getStaff(){
+  const s = {};
+  STAFF_FIELDS.forEach(f => s[f] = val(f));
+  return s;
+}
+
+// プラン一覧(入力のある価格のみ・最大4列)
+function buildPlans(st){
+  const expTotalAll = st.expenses.reduce((s,e)=>s+e.amount, 0);
+  const expTotalKaitori = st.expenses.filter(e=>!e.kaitoriExempt).reduce((s,e)=>s+e.amount, 0);
+  const defs = [
+    { key:"challenge", label:"チャレンジ価格", price: st.priceChallenge, kaitori:false },
+    { key:"teian",     label:"売出提案価格",   price: st.priceTeian,     kaitori:false, rec:true },
+    { key:"satei",     label:"査定価格",       price: st.priceSatei,     kaitori:false },
+    { key:"kaitori",   label:"買取価格",       price: st.priceKaitori,   kaitori:true  },
+  ];
+  return defs.filter(d => d.price > 0).map(d => {
+    const fee = calcBrokerageFee(d.price, st.discount, d.kaitori);
+    const stamp = calcStampTax(d.price);
+    const exp = d.kaitori ? expTotalKaitori : expTotalAll;
+    const net = d.price - (fee + stamp + exp) - (st.loanBalance || 0);
+    return { ...d, fee, stamp, exp, net };
+  });
+}
+
+/* ============================================================
+   計算結果テーブル(入力モード・リアルタイム)
+============================================================ */
+function renderCalcSummary(){
+  const st = getState();
+  const plans = buildPlans(st);
+  const el = $("calcSummary");
+  if (!plans.length) {
+    el.innerHTML = '<p class="empty-note">売買価格を入力すると、プラン別の仲介手数料・印紙税・手取り概算がここに表示されます。</p>';
+    return;
+  }
+  let html = "<table><tr><td></td>" + plans.map(p=>`<th>${p.label}</th>`).join("") + "</tr>";
+  html += "<tr><td>売買価格</td>" + plans.map(p=>`<td>${yen(p.price)}</td>`).join("") + "</tr>";
+  html += `<tr><td>仲介手数料${st.discount ? "(5%割引)" : ""}</td>` +
+          plans.map(p=>`<td>${p.kaitori ? '<span class="fee-zero">0円(不要)</span>' : yen(p.fee)}</td>`).join("") + "</tr>";
+  html += "<tr><td>印紙税</td>" + plans.map(p=>`<td>${yen(p.stamp)}</td>`).join("") + "</tr>";
+  html += "<tr><td>諸経費合計</td>" + plans.map(p=>`<td>${yen(p.exp)}</td>`).join("") + "</tr>";
+  if (st.loanBalance > 0) {
+    html += "<tr><td>ローン残債</td>" + plans.map(()=>`<td>${yen(st.loanBalance)}</td>`).join("") + "</tr>";
+  }
+  html += '<tr class="net-row"><td>手取り概算</td>' + plans.map(p=>`<td>${yen(p.net)}</td>`).join("") + "</tr>";
+  html += "</table>";
+  const badge = st.discount ? '<div style="text-align:right;margin-top:8px;"><span class="discount-badge">5%割引適用中</span></div>' : "";
+  el.innerHTML = html + badge;
+}
+
+/* ============================================================
+   諸経費 行UI
+============================================================ */
+function addExpenseRow(preset, amount, exempt){
+  const row = document.createElement("div");
+  row.className = "exp-row";
+  row.innerHTML = `
+    <select class="exp-preset">
+      <option value="">選択…</option>
+      ${EXPENSE_PRESETS.map(p=>`<option value="${p}">${p}</option>`).join("")}
+    </select>
+    <input type="text" class="exp-name" placeholder="項目名">
+    <input type="number" class="exp-amount" min="0" placeholder="0">
+    <label class="kaitori-exempt"><input type="checkbox" class="exp-exempt">不要</label>
+    <button type="button" class="del-btn" title="行を削除">✕</button>`;
+  const sel = row.querySelector(".exp-preset");
+  const nameI = row.querySelector(".exp-name");
+  const exemptI = row.querySelector(".exp-exempt");
+  sel.addEventListener("change", () => {
+    if (!sel.value) return;
+    nameI.value = sel.value === "その他(自由入力)" ? "" : sel.value;
+    exemptI.checked = KAITORI_EXEMPT_DEFAULT.has(sel.value);
+    if (sel.value === "その他(自由入力)") nameI.focus();
+    renderCalcSummary();
+  });
+  row.querySelector(".del-btn").addEventListener("click", () => { row.remove(); renderCalcSummary(); });
+  if (preset) {
+    if (EXPENSE_PRESETS.includes(preset)) sel.value = preset;
+    nameI.value = preset === "その他(自由入力)" ? "" : preset;
+  }
+  if (amount) row.querySelector(".exp-amount").value = amount;
+  exemptI.checked = !!exempt;
+  $("expenseRows").appendChild(row);
+  return row;
+}
+
+/* ============================================================
+   担当者設定の保存・復元(localStorage)
+============================================================ */
+function saveStaff(){
+  try {
+    localStorage.setItem(STAFF_KEY, JSON.stringify(getStaff()));
+    const s = $("saveStaffStatus");
+    s.classList.add("show");
+    setTimeout(() => s.classList.remove("show"), 2200);
+  } catch (e) {
+    alert("設定の保存に失敗しました:" + e.message);
+  }
+}
+function loadStaff(){
+  try {
+    const raw = localStorage.getItem(STAFF_KEY);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    STAFF_FIELDS.forEach(f => { if (s[f] !== undefined && s[f] !== "") $(f).value = s[f]; });
+  } catch (e) { /* 保存データが壊れていても初期値で続行 */ }
+}
+
+/* ============================================================
+   売主様提示用プレビュー(PDF出力)
+============================================================ */
+const esc = s => (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// 画像読み込み失敗時はプレースホルダー枠を隠す
+const imgTag = (src, cls) =>
+  `<div class="imgbox ${cls}"><img src="${encodeURI(src)}" alt="" onerror="this.parentNode.classList.add('missing')"></div>`;
+
+function buildPreview(){
+  const st = getState();
+  const staff = getStaff();
+  const plans = buildPlans(st);
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+  const custDisp = st.customerName ? `${esc(st.customerName)} 様` : "お客様";
+  const staffLine = staff.staffRole ? `${esc(staff.staffRole)}　${esc(staff.staffName)}` : esc(staff.staffName);
+
+  /* ---- P1:収支シミュレーション ---- */
+  let propItems = [];
+  if (st.propertyName) propItems.push(`<span><b>物件名</b> ${esc(st.propertyName)}</span>`);
+  if (st.address) propItems.push(`<span><b>所在地</b> ${esc(st.address)}</span>`);
+  propItems.push(`<span><b>作成日</b> ${dateStr}</span>`);
+
+  let table;
+  if (!plans.length) {
+    table = '<p style="font-size:11pt;color:#888;text-align:center;padding:30mm 0;">価格情報が未入力です。入力モードで売買価格を入力してください。</p>';
+  } else {
+    let h = "<table class='sim-table'><thead><tr><th></th>" +
+      plans.map(p=>`<th class="${p.rec?'rec':''}">${p.label}${p.rec?'<br><small>おすすめ</small>':''}</th>`).join("") + "</tr></thead><tbody>";
+    h += "<tr><td class='rowhead'>売買価格</td>" + plans.map(p=>`<td class="p-big">${yen(p.price)}</td>`).join("") + "</tr>";
+    h += `<tr><td class='rowhead'>仲介手数料${st.discount?'<br><small>(5%割引適用)</small>':''}</td>` +
+      plans.map(p=>`<td>${p.kaitori ? '<span class="fee-zero">0円(不要)</span>' : yen(p.fee)}</td>`).join("") + "</tr>";
+    h += "<tr><td class='rowhead'>印紙税</td>" + plans.map(p=>`<td>${yen(p.stamp)}</td>`).join("") + "</tr>";
+    h += "<tr><td class='rowhead'>諸経費</td>" + plans.map(p=>`<td>${yen(p.exp)}</td>`).join("") + "</tr>";
+    if (st.loanBalance > 0) {
+      h += "<tr><td class='rowhead'>ローン残債</td>" + plans.map(()=>`<td>${yen(st.loanBalance)}</td>`).join("") + "</tr>";
+    }
+    h += "<tr class='net-row'><td class='rowhead'>お手元に残る<br>概算額</td>" + plans.map(p=>`<td>${yen(p.net)}</td>`).join("") + "</tr>";
+    h += "</tbody></table>";
+    table = h;
+  }
+  const discLine = st.discount
+    ? '<div class="disc-line">★ 専任媒介の「仲介手数料5%割引」を適用した金額です。</div>' : "";
+
+  const page1 = `
+  <div class="page">
+    <div class="cover-head">
+      <div class="cover-cust">
+        <div class="greet">${esc(custDisp.replace(/ 様$/,''))!=='お客様' ? 'ご売却をご検討の' : ''}</div>
+        <div class="cname">${custDisp}</div>
+        <span class="bar"></span>
+      </div>
+      <div class="cover-logo-wrap">
+        <div class="vivi-logo"><span class="e">ESTATE</span><span class="v">ViVi</span></div>
+        <div class="cover-char">${imgTag(CHAR_GUIDE,'')}</div>
+      </div>
+    </div>
+
+    <div class="cover-title">
+      <div class="main">ご売却 収支シミュレーション</div>
+      <div class="sub">お手元に残る金額の概算をご案内します</div>
+    </div>
+
+    <div class="prop-strip">${propItems.join("")}</div>
+
+    <div class="sim-wrap">
+      ${table}
+      ${discLine}
+      <div class="sim-note">
+        ※上記は概算であり、お手元に残る金額を保証するものではありません。<br>
+        ※譲渡所得税・登記費用・測量費用など、物件の状況により別途費用がかかる場合があります。詳細は次ページおよび担当者までご確認ください。
+      </div>
+    </div>
+
+    <div class="page-foot">
+      <span>${esc(staff.companyName)}</span>
+      <span class="brand">ESTATE ViVi</span>
+      <span>1</span>
+    </div>
+  </div>`;
+
+  /* ---- P2:税金の説明 ---- */
+  const page2 = `
+  <div class="page">
+    <div class="sec-head"><span class="no">TAX</span><h2>ご売却にかかる税金について</h2></div>
+
+    <div class="tax-intro">
+      <div class="tax-char">${imgTag(CHAR_PROF,'')}</div>
+      <div class="tax-lead">
+        不動産を売却して<span class="em">利益(譲渡所得)</span>が出た場合、その利益に対して<span class="em">譲渡所得税・住民税</span>がかかります。
+        ただし、マイホームや一定の土地には大きな<span class="em">特別控除</span>が用意されており、税金がかからない、または大幅に軽減されるケースも少なくありません。
+        主な制度を分かりやすくご説明します。
+      </div>
+    </div>
+
+    <div class="tax-formula">
+      譲渡所得 = 売却価格 −(取得費 + 譲渡費用)− 特別控除
+      <small>※取得費が不明な場合は売却価格の5%を概算取得費として計算できます。</small>
+    </div>
+
+    <div class="tax-grid">
+      <div class="tax-box hl">
+        <h3>① マイホームの3,000万円特別控除</h3>
+        <p>ご自宅(居住用財産)を売却した場合、譲渡所得から最高<span class="amt">3,000万円</span>を控除できます。多くのマイホーム売却では、これにより税金がかからないケースが多くあります。</p>
+      </div>
+      <div class="tax-box">
+        <h3>② 相続した空き家の3,000万円控除</h3>
+        <p>被相続人が住んでいた家屋等を相続後に売却した場合も、一定の要件を満たせば最高<span class="amt">3,000万円</span>の控除が受けられます(耐震改修または取壊しなどの要件あり)。</p>
+      </div>
+      <div class="tax-box hl">
+        <h3>③ 低未利用地等の100万円特別控除</h3>
+        <p>使われていない土地(<b>低未利用地</b>)の流通を促すための制度です。都市計画区域内にある一定の低未利用土地等を売却した場合、譲渡所得から<span class="amt">100万円</span>を控除できます。</p>
+        <ul>
+          <li>譲渡した年の1月1日時点で<b>所有期間5年超</b></li>
+          <li>売却価額が<b>500万円以下</b>(用途地域が定められた区域等は<b>800万円以下</b>)</li>
+          <li>売却後にその土地が利用されること 等の要件があります</li>
+        </ul>
+      </div>
+      <div class="tax-box">
+        <h3>④ 譲渡所得税の税率</h3>
+        <p>税率は所有期間によって変わります(復興特別所得税を含む)。</p>
+        <div class="tax-rate">
+          <div>長期(5年超)<b>20.315%</b></div>
+          <div>短期(5年以下)<b>39.63%</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tax-caution">
+      ⚠ 税金の取り扱いは個々の状況や最新の税制改正により異なります。各特別控除には細かな適用要件があり、確定申告が必要です。実際の申告にあたっては、必ず<b>税理士または所轄の税務署</b>にご確認ください。本資料は概要のご案内であり、税額を保証するものではありません。
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-staff">
+        <div class="role">ご売却担当</div>
+        <div class="nm">${staffLine || "担当者"}</div>
+        <div class="line">
+          ${staff.staffTel ? `携帯 <b>${esc(staff.staffTel)}</b><br>` : ""}
+          ${staff.mail ? `Mail ${esc(staff.mail)}` : ""}
+        </div>
+      </div>
+      <div class="contact-co">
+        <div class="co-name">${esc(staff.companyName)}</div>
+        <div class="line">
+          ${staff.freeDial ? `フリーダイヤル <span class="free">${esc(staff.freeDial)}</span><br>` : ""}
+          ${esc(staff.zip)} ${esc(staff.companyAddr)}<br>
+          ${staff.license ? esc(staff.license) : ""}
+        </div>
+      </div>
+    </div>
+
+    <div class="page-foot">
+      <span>${esc(staff.companyName)}</span>
+      <span class="brand">ESTATE ViVi</span>
+      <span>2</span>
+    </div>
+  </div>`;
+
+  $("pages").innerHTML = page1 + page2;
+}
+
+function showPreview(){
+  buildPreview();
+  document.body.classList.add("preview");
+  window.scrollTo(0, 0);
+}
+function backToInput(){
+  document.body.classList.remove("preview");
+}
+
+/* ============================================================
+   JSON 保存 / 読込(物件ごとのデータ)
+============================================================ */
+function exportJson(){
+  const data = {
+    customerName: val("customerName"),
+    propertyName: val("propertyName"),
+    address: val("address"),
+    priceChallenge: num("priceChallenge"),
+    priceTeian: num("priceTeian"),
+    priceSatei: num("priceSatei"),
+    priceKaitori: num("priceKaitori"),
+    discount: $("discountToggle").checked,
+    loanBalance: num("loanBalance"),
+    expenses: getExpenses(),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = (data.customerName || "収支計算") + ".json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importJson(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const d = JSON.parse(reader.result);
+      $("customerName").value = d.customerName || "";
+      $("propertyName").value = d.propertyName || "";
+      $("address").value = d.address || "";
+      $("priceChallenge").value = d.priceChallenge || "";
+      $("priceTeian").value = d.priceTeian || "";
+      $("priceSatei").value = d.priceSatei || "";
+      $("priceKaitori").value = d.priceKaitori || "";
+      $("discountToggle").checked = !!d.discount;
+      $("discountStateText").textContent = d.discount ? "適用する" : "適用しない";
+      $("loanBalance").value = d.loanBalance || "";
+      $("expenseRows").innerHTML = "";
+      (d.expenses || []).forEach(e => addExpenseRow(e.name, e.amount, e.kaitoriExempt));
+      if (!d.expenses || !d.expenses.length) addExpenseRow();
+      renderCalcSummary();
+    } catch (err) {
+      alert("JSONの読み込みに失敗しました:" + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ============================================================
+   査定書PDF抽出(pdf.js / index.html の検証済みエンジンを流用)
+============================================================ */
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+
+// 文字の正規化。NFKCで全角英数・記号・康熙部首を一括変換し、
+// NFKCが扱わない波ダッシュ等のみ個別に変換する
+function normalizeText(s){
+  let t;
+  try { t = s.normalize("NFKC"); } catch (e) { t = s; }
+  return t
+    .replace(/[⻄⻘⻑⻲⻯⻫⻭⻤⻨⻩戶]/g, c => (
+      {"⻄":"西","⻘":"青","⻑":"長","⻲":"亀","⻯":"竜","⻫":"斉","⻭":"歯","⻤":"鬼","⻨":"麦","⻩":"黄","戶":"戸"}[c] || c))
+    .replace(/〜/g, "~")
+    .replace(/[−‐―]/g, "-")
+    .replace(/ー(?=[0-9])/g, "-");
+}
+
+// ページごとに行構造を復元してテキスト抽出
+async function extractPdfPages(file){
+  const data = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data }).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    const rows = [];
+    for (const it of tc.items) {
+      if (!it.str || !it.str.trim()) continue;
+      const y = it.transform[5], x = it.transform[4];
+      let row = rows.find(r => Math.abs(r.y - y) <= 3);
+      if (!row) { row = { y, items: [] }; rows.push(row); }
+      row.items.push({ x, s: it.str });
+    }
+    const lines = rows.sort((a,b)=>b.y-a.y)
+      .map(r => r.items.sort((a,b)=>a.x-b.x).map(o=>o.s).join(" ").trim());
+    pages.push(lines.join("\n"));
+  }
+  return pages;
+}
+
+const parseMan = s => parseFloat(s.replace(/,/g, "")); // 万円文字列 → 万円数値
+
+// 物件名の整形:末尾の種別語を分離し、部屋番号の前に空白を入れる
+function splitPropertyName(line, out){
+  let name = line.replace(/\([^)]*査定[^)]*\)$/, ""); // 末尾の「(机上査定)」等を除去
+  const tm = name.match(/^(.+?)(マンション|戸建て?|土地)$/);
+  if (tm) { name = tm[1]; out.propertyType = tm[2] === "戸建" ? "戸建て" : tm[2]; }
+  const rm = name.match(/^(.+?)([0-9]+)号?$/);
+  if (rm && (/号$/.test(name) || out.propertyType === "マンション")) {
+    name = rm[1] + " " + rm[2] + "号";
+  }
+  out.propertyName = name.trim();
+}
+
+function extractFields(pages, fileName){
+  // NFKC正規化のうえ、行内の空白をすべて除去してから照合する
+  // (Chromium出力の査定書PDFは全文字の間に空白が入るため)
+  const compactPages = pages.map(pg =>
+    normalizeText(pg).split("\n").map(l => l.replace(/\s+/g, "")).filter(Boolean)
+  );
+  const lines1 = compactPages[0] || [];
+  const all = compactPages.map(ls => ls.join("\n")).join("\n");
+  const out = {};
+
+  // 顧客名・物件名(表紙:「不動産査定報告書」の前後の行)
+  const repIdx = lines1.findIndex(l => l.includes("不動産査定報告書"));
+  if (repIdx >= 0) {
+    for (let i = repIdx - 1; i >= 0; i--) {
+      const m = lines1[i].match(/^(.+?)様$/);
+      if (m) { out.customerName = m[1]; break; }
+    }
+    if (lines1[repIdx + 1]) splitPropertyName(lines1[repIdx + 1], out);
+  }
+  if (!out.customerName) {
+    const m = all.match(/^(.{2,30}?)様$/m);
+    if (m) out.customerName = m[1];
+  }
+
+  // 価格(最初の出現を採用。ラベル同行/次行・単一値/範囲表記に対応)
+  let m;
+  if ((m = all.match(/査定価格[:：]?\n?([\d,]+)万円/))) out.priceSatei = parseMan(m[1]);
+  if ((m = all.match(/売出提案価格[:：]?\n?([\d,]+)万円~([\d,]+)万円/))) {
+    out.priceTeianLow = parseMan(m[1]); out.priceTeianHigh = parseMan(m[2]);
+  }
+  if ((m = all.match(/チャレンジ価格[:：]?\n?([\d,]+)万円(?:~([\d,]+)万円)?/))) {
+    out.priceChallenge = parseMan(m[2] || m[1]); // 範囲表記なら上限を採用
+  }
+  if ((m = all.match(/買取価格(?:\(保証価格\))?[:：]?\n?([\d,]+)万円/))) out.priceKaitori = parseMan(m[1]);
+
+  // 所在地(戸建ては土地/建物概要が結合されるため右列ラベル以降を切り落とす)
+  if ((m = all.match(/(?:^|\n)住所[:：]?([^\n]+)/)) && !/^マンション名/.test(m[1])) {
+    out.address = m[1].replace(/(構造|階数|建物面積|築年月).*$/, "");
+  }
+  if ((m = all.match(/(?:^|\n)マンション名[:：]?([^\n]+)/)) && !/^所在階/.test(m[1])) out.mansionName = m[1];
+  if ((m = all.match(/部屋番号[:：]?([0-9]+号?)/))) out.roomNo = m[1];
+
+  // ファイル名からのフォールバック(命名規則: 顧客名様_住所_部屋番号_マンション名_種別.pdf)
+  if (fileName) {
+    const fn = normalizeText(fileName.replace(/\.pdf$/i, "")).trim();
+    const fm = fn.match(/^(.+?)様?_(.+?)_([0-9]+)_(.+?)_(マンション|戸建て?|土地)$/);
+    if (fm) {
+      out.customerName = fm[1].trim() || out.customerName;
+      if (!out.address) out.address = fm[2].replace(/\s+/g, "");
+      if (!out.roomNo) out.roomNo = fm[3] + "号";
+      if (!out.mansionName) out.mansionName = fm[4].replace(/\s+/g, "");
+    }
+  }
+
+  // 物件名が表紙から取れなかった場合:マンション名+部屋番号で組み立て
+  if (!out.propertyName && out.mansionName) {
+    out.propertyName = out.mansionName + (out.roomNo ? " " + out.roomNo.replace(/号?$/, "号") : "");
+  }
+  return out;
+}
+
+// 収支計算ツールで使う項目(キー, 表示名, 入力欄ID)
+const FIELD_DEFS = [
+  ["customerName", "お客様名", "customerName"],
+  ["propertyName", "物件名", "propertyName"],
+  ["address", "所在地", "address"],
+  ["priceSatei", "査定価格", "priceSatei"],
+  ["priceTeian", "売出提案価格", "priceTeian"],
+  ["priceChallenge", "チャレンジ価格", "priceChallenge"],
+  ["priceKaitori", "買取価格", "priceKaitori"],
+];
+
+async function handlePdf(file){
+  const status = $("pdfStatus");
+  const list = $("extractResultList");
+  list.innerHTML = "";
+  status.innerHTML = `<p>📄 <b>${esc(file.name)}</b> を解析中…</p>`;
+  try {
+    const pages = await extractPdfPages(file);
+    const textLen = pages.join("").replace(/\s/g, "").length;
+    if (textLen < 40) {
+      status.innerHTML = `
+        <div class="warn-box">
+          <b>⚠ このPDFからテキストを抽出できませんでした。</b><br>
+          スキャンしたPDFや「印刷 → PDFに保存(Microsoft Print to PDF等)」で作成されたPDFは、文字情報を持たないため自動抽出ができません。<br>
+          <b>査定ツールから直接出力(ダウンロード)したPDF</b>をご利用いただくか、下のフォームに手入力してください。手入力でも問題なく作成できます。
+        </div>`;
+      markExtractStatus({});
+      return;
+    }
+    const f = extractFields(pages, file.name);
+    f.priceTeian = f.priceTeianHigh || f.priceTeianLow; // 売出提案価格は上限を採用(単一欄)
+
+    // フォームへ反映(取れた項目のみ上書き。価格は万円単位)
+    if (f.customerName)  $("customerName").value  = f.customerName;
+    if (f.propertyName)  $("propertyName").value  = f.propertyName;
+    if (f.address)       $("address").value       = f.address;
+    if (f.priceSatei)    $("priceSatei").value    = f.priceSatei;
+    if (f.priceTeian)    $("priceTeian").value    = f.priceTeian;
+    if (f.priceChallenge)$("priceChallenge").value= f.priceChallenge;
+    if (f.priceKaitori)  $("priceKaitori").value  = f.priceKaitori;
+
+    const okCount = FIELD_DEFS.filter(([k]) => f[k] !== undefined && f[k] !== "").length;
+    status.innerHTML = `<div class="ok-box">✓ 解析完了:${FIELD_DEFS.length}項目中 ${okCount}項目を自動抽出しました。内容をご確認のうえ、必要に応じて修正してください。</div>`;
+    list.innerHTML = FIELD_DEFS.map(([k, label]) => {
+      const ok = f[k] !== undefined && f[k] !== "";
+      return `<span class="tag ${ok ? "ok" : "miss"}">${ok ? "✓" : "⚠"} ${label}</span>`;
+    }).join("");
+    markExtractStatus(f);
+    renderCalcSummary();
+  } catch (err) {
+    console.error(err);
+    status.innerHTML = `
+      <div class="warn-box">
+        <b>⚠ PDFの解析中にエラーが発生しました。</b>(${esc(err.message || String(err))})<br>
+        お手数ですが、下のフォームに手入力してください。
+      </div>`;
+    markExtractStatus({});
+  }
+}
+
+// 入力欄に緑(抽出成功)/黄(抽出失敗)のハイライトを付与
+function markExtractStatus(f){
+  for (const [key,, inputId] of FIELD_DEFS) {
+    const el = $(inputId);
+    if (!el) continue;
+    el.classList.remove("extract-ok", "extract-miss");
+    el.classList.add(f[key] !== undefined && f[key] !== "" ? "extract-ok" : "extract-miss");
+  }
+}
+
+/* ============================================================
+   初期化
+============================================================ */
+function init(){
+  loadStaff();           // 保存済みの担当者設定を復元
+  addExpenseRow();       // 諸経費の初期行
+
+  $("app").addEventListener("input", renderCalcSummary);
+  $("discountToggle").addEventListener("change", () => {
+    $("discountStateText").textContent = $("discountToggle").checked ? "適用する" : "適用しない";
+    renderCalcSummary();
+  });
+  $("addExpenseBtn").addEventListener("click", () => addExpenseRow());
+  $("saveStaffBtn").addEventListener("click", saveStaff);
+
+  // 査定書PDF:ファイル選択 + ドラッグ&ドロップ
+  const dz = $("dropZone");
+  $("pdfPickBtn").addEventListener("click", () => $("pdfFile").click());
+  $("pdfFile").addEventListener("change", e => { if (e.target.files[0]) handlePdf(e.target.files[0]); });
+  ["dragenter","dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("dragover"); }));
+  ["dragleave","dragend"].forEach(ev => dz.addEventListener(ev, () => dz.classList.remove("dragover")));
+  dz.addEventListener("drop", e => {
+    e.preventDefault(); dz.classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if (file) handlePdf(file);
+  });
+
+  $("exportBtn").addEventListener("click", exportJson);
+  $("importBtn").addEventListener("click", () => $("importFile").click());
+  $("importFile").addEventListener("change", e => { if (e.target.files[0]) importJson(e.target.files[0]); });
+
+  $("previewBtn").addEventListener("click", showPreview);
+  $("backBtn").addEventListener("click", backToInput);
+  $("printBtn").addEventListener("click", () => window.print());
+
+  renderCalcSummary();
+}
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
