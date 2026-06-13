@@ -204,7 +204,8 @@ body.preview #previewMode{display:block;}
 .imgbox img{max-width:100%;max-height:100%;object-fit:contain;}
 .imgbox.missing img{display:none;}
 
-/* ViViロゴ(テキスト) */
+/* ViViロゴ(画像。読み込み失敗時は下のテキストロゴにフォールバック) */
+.cover-logo img{width:24mm;height:24mm;object-fit:contain;display:block;}
 .vivi-logo{
   display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   background:var(--navy);color:#fff;border-radius:2mm;padding:2.5mm 4mm;
@@ -512,6 +513,7 @@ body.preview #previewMode{display:block;}
 // フォルダ内のキャラクター画像(ご案内=表紙、教授=税金説明)
 const CHAR_GUIDE = "02ご案内(透過).png";
 const CHAR_PROF  = "07教授(透過）.gif";   // ※ファイル名は全角カッコ
+const LOGO       = "ViVilogo.png";        // ViViロゴ画像(表紙)
 
 const EXPENSE_PRESETS = [
   "抵当権抹消費用","繰り上げ返済手数料","住所変更登記費用","相続登記費用",
@@ -743,7 +745,10 @@ function buildPreview(){
         <span class="bar"></span>
       </div>
       <div class="cover-logo-wrap">
-        <div class="vivi-logo"><span class="e">ESTATE</span><span class="v">ViVi</span></div>
+        <div class="cover-logo">
+          <img src="${encodeURI(LOGO)}" alt="ViVi不動産" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
+          <div class="vivi-logo" style="display:none"><span class="e">ESTATE</span><span class="v">ViVi</span></div>
+        </div>
         <div class="cover-char">${imgTag(CHAR_GUIDE,'')}</div>
       </div>
     </div>
