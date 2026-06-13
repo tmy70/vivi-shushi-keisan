@@ -259,48 +259,48 @@ body.preview #previewMode{display:block;}
 .sim-note{font-size:8.5pt;color:var(--ink-soft);margin-top:5mm;line-height:1.7;}
 .disc-line{margin-top:3mm;font-size:9pt;color:var(--brown);font-weight:bold;}
 
-/* --- P2 税金 --- */
-.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:4mm;}
-.tax-char{width:32mm;height:36mm;flex-shrink:0;}
-.tax-lead{font-size:9.5pt;line-height:1.8;color:#4a4036;}
+/* --- P2 税金(A4内に確実に収まるよう詰めた寸法) --- */
+.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:3.5mm;}
+.tax-char{width:30mm;height:33mm;flex-shrink:0;}
+.tax-lead{font-size:9pt;line-height:1.7;color:#4a4036;}
 .tax-lead .em{color:var(--orange);font-weight:bold;}
 
 .tax-formula{
-  background:var(--orange-pale);border-radius:2.5mm;padding:3.5mm 5mm;text-align:center;
-  font-size:11.5pt;font-weight:bold;color:var(--brown);margin-bottom:4.5mm;letter-spacing:.02em;
+  background:var(--orange-pale);border-radius:2.5mm;padding:3mm 5mm;text-align:center;
+  font-size:11pt;font-weight:bold;color:var(--brown);margin-bottom:3.5mm;letter-spacing:.02em;
 }
-.tax-formula small{display:block;font-size:8.5pt;font-weight:normal;color:var(--ink-soft);margin-top:1.5mm;}
+.tax-formula small{display:block;font-size:8pt;font-weight:normal;color:var(--ink-soft);margin-top:1.2mm;}
 
-.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;}
-.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:3.5mm 4.5mm;background:#fffdf9;}
+.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm;}
+.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:3mm 4mm;background:#fffdf9;}
 .tax-box.full{grid-column:1 / -1;}
-.tax-box h3{font-size:10.5pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.6mm 3.5mm;margin-bottom:2mm;}
+.tax-box h3{font-size:10pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.4mm 3.5mm;margin-bottom:1.5mm;}
 .tax-box.hl h3{background:var(--orange);}
-.tax-box p,.tax-box li{font-size:9pt;line-height:1.7;color:#4a4036;}
-.tax-box ul{padding-left:5mm;margin-top:1mm;}
+.tax-box p,.tax-box li{font-size:8.7pt;line-height:1.6;color:#4a4036;}
+.tax-box ul{padding-left:5mm;margin-top:.8mm;}
 .tax-box .amt{color:var(--orange);font-weight:bold;}
-.tax-rate{display:flex;gap:4mm;margin-top:2.5mm;}
-.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:2.5mm;text-align:center;font-size:8.5pt;color:#5a4f44;}
-.tax-rate b{display:block;font-size:15pt;color:var(--orange);}
+.tax-rate{display:flex;gap:4mm;margin-top:2mm;}
+.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:2.2mm;text-align:center;font-size:8.5pt;color:#5a4f44;}
+.tax-rate b{display:block;font-size:14pt;color:var(--orange);}
 .tax-caution{
-  margin-top:4mm;background:#fdf3ea;border:.4mm solid var(--orange-line);border-left:1.5mm solid var(--orange);
-  border-radius:0 2mm 2mm 0;padding:2.5mm 5mm;font-size:8.5pt;color:#7a5230;line-height:1.65;
+  margin-top:3mm;background:#fdf3ea;border:.4mm solid var(--orange-line);border-left:1.5mm solid var(--orange);
+  border-radius:0 2mm 2mm 0;padding:2.2mm 4.5mm;font-size:8pt;color:#7a5230;line-height:1.55;
 }
 
 /* 連絡先(margin-top:autoで下寄せしつつ、絶対配置フッターと重ならないよう下マージンを確保) */
-.contact-grid{display:flex;gap:6mm;margin-top:auto;margin-bottom:7mm;align-items:stretch;}
-.contact-staff{background:var(--navy);color:#fff;border-radius:3mm;padding:4mm 5.5mm;flex:1;}
+.contact-grid{display:flex;gap:6mm;margin-top:auto;margin-bottom:4mm;align-items:stretch;}
+.contact-staff{background:var(--navy);color:#fff;border-radius:3mm;padding:3.5mm 5mm;flex:1;}
 .contact-staff .role{font-size:8.5pt;opacity:.85;}
-.contact-staff .nm{font-size:15pt;font-weight:bold;margin:1mm 0 1.5mm;}
-.contact-staff .line{font-size:9pt;line-height:1.8;}
+.contact-staff .nm{font-size:14pt;font-weight:bold;margin:.5mm 0 1mm;}
+.contact-staff .line{font-size:9pt;line-height:1.7;}
 .contact-staff .line b{color:var(--orange-soft);}
 .contact-co{
-  background:var(--orange-pale);border-radius:3mm;padding:4mm 5.5mm;flex:1.2;
+  background:var(--orange-pale);border-radius:3mm;padding:3.5mm 5mm;flex:1.2;
   display:flex;flex-direction:column;justify-content:center;
 }
-.contact-co .co-name{font-size:13pt;font-weight:bold;color:var(--brown);margin-bottom:1mm;}
-.contact-co .line{font-size:9pt;line-height:1.8;color:#4a4036;}
-.contact-co .free{font-size:15pt;font-weight:bold;color:var(--orange);}
+.contact-co .co-name{font-size:13pt;font-weight:bold;color:var(--brown);margin-bottom:.5mm;}
+.contact-co .line{font-size:9pt;line-height:1.7;color:#4a4036;}
+.contact-co .free{font-size:14pt;font-weight:bold;color:var(--orange);}
 
 /* ============================================================
    印刷
@@ -719,7 +719,7 @@ function buildPreview(){
     table = '<p style="font-size:11pt;color:#888;text-align:center;padding:30mm 0;">価格情報が未入力です。入力モードで売買価格を入力してください。</p>';
   } else {
     let h = "<table class='sim-table'><thead><tr><th></th>" +
-      plans.map(p=>`<th class="${p.rec?'rec':''}">${p.label}${p.rec?'<br><small>おすすめ</small>':''}</th>`).join("") + "</tr></thead><tbody>";
+      plans.map(p=>`<th>${p.label}</th>`).join("") + "</tr></thead><tbody>";
     h += "<tr><td class='rowhead'>売買価格</td>" + plans.map(p=>`<td class="p-big">${yen(p.price)}</td>`).join("") + "</tr>";
     h += `<tr><td class='rowhead'>仲介手数料${st.discount?'<br><small>(5%割引適用)</small>':''}</td>` +
       plans.map(p=>`<td>${p.kaitori ? '<span class="fee-zero">0円(不要)</span>' : yen(p.fee)}</td>`).join("") + "</tr>";
@@ -733,13 +733,12 @@ function buildPreview(){
     table = h;
   }
   const discLine = st.discount
-    ? '<div class="disc-line">★ 専任媒介の「仲介手数料5%割引」を適用した金額です。</div>' : "";
+    ? '<div class="disc-line">★ 当社専任媒介契約のサービスとして、仲介手数料5%割引を適用した金額です。</div>' : "";
 
   const page1 = `
   <div class="page">
     <div class="cover-head">
       <div class="cover-cust">
-        <div class="greet">${esc(custDisp.replace(/ 様$/,''))!=='お客様' ? 'ご売却をご検討の' : ''}</div>
         <div class="cname">${custDisp}</div>
         <span class="bar"></span>
       </div>
