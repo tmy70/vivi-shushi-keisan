@@ -198,8 +198,8 @@ body.preview #previewMode{display:block;}
   width:210mm;background:#fff;margin:0 auto;padding:16mm;
   box-shadow:0 3px 16px rgba(0,0,0,.22);
 }
-.doc-section{margin-top:7mm;}
-.doc-section.tax{margin-top:9mm;}
+.doc-section{margin-top:4mm;}
+.doc-section.tax{margin-top:5mm;}
 
 /* キャラクター画像 */
 .imgbox{position:relative;display:flex;align-items:center;justify-content:center;}
@@ -207,7 +207,7 @@ body.preview #previewMode{display:block;}
 .imgbox.missing img{display:none;}
 
 /* ViViロゴ(画像。読み込み失敗時は下のテキストロゴにフォールバック) */
-.cover-logo img{width:20mm;height:20mm;object-fit:contain;display:block;}
+.cover-logo img{width:17mm;height:17mm;object-fit:contain;display:block;}
 .vivi-logo{
   display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   background:var(--navy);color:#fff;border-radius:2mm;padding:2.5mm 4mm;
@@ -218,114 +218,166 @@ body.preview #previewMode{display:block;}
 /* ページ見出し帯 */
 .sec-head{
   background:linear-gradient(120deg,var(--orange) 0%,var(--orange-soft) 100%);color:#fff;
-  padding:4mm 7mm;border-radius:2.5mm;margin-bottom:7mm;display:flex;align-items:baseline;gap:5mm;
+  padding:3mm 6mm;border-radius:2.5mm;margin-bottom:4mm;display:flex;align-items:baseline;gap:5mm;
 }
-.sec-head .no{font-size:10pt;color:#fff;opacity:.85;font-weight:bold;letter-spacing:.1em;white-space:nowrap;}
-.sec-head h2{font-size:17pt;letter-spacing:.06em;font-weight:bold;}
+.sec-head .no{font-size:9.5pt;color:#fff;opacity:.85;font-weight:bold;letter-spacing:.1em;white-space:nowrap;}
+.sec-head h2{font-size:15pt;letter-spacing:.06em;font-weight:bold;}
 
 .doc-foot{
-  margin-top:8mm;display:flex;justify-content:space-between;align-items:center;
+  margin-top:6mm;display:flex;justify-content:space-between;align-items:center;
   font-size:8.8pt;color:#a99;border-top:.4mm solid var(--orange-line);padding-top:2mm;
 }
 .doc-foot .brand{color:var(--brown);font-weight:bold;letter-spacing:.08em;}
 
-/* --- ヘッダー(お客様名+物件) --- */
-.cover-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8mm;margin-bottom:6mm;
-  border-bottom:.8mm solid var(--orange-line);padding-bottom:5mm;}
-.cover-cust .greet{font-size:11pt;color:var(--ink-soft);}
-.cover-cust .cname{font-size:21pt;font-weight:bold;color:var(--brown);letter-spacing:.03em;}
-.cover-cust .bar{display:block;width:34mm;height:1.6mm;margin-top:2mm;border-radius:1mm;
+/* --- ヘッダー(お客様名+物件)。ロゴとキャラは横並びで高さを抑える --- */
+.cover-head{display:flex;justify-content:space-between;align-items:center;gap:8mm;margin-bottom:4mm;
+  border-bottom:.8mm solid var(--orange-line);padding-bottom:3mm;}
+.cover-cust .cname{font-size:19pt;font-weight:bold;color:var(--brown);letter-spacing:.03em;}
+.cover-cust .bar{display:block;width:32mm;height:1.5mm;margin-top:1.5mm;border-radius:1mm;
   background:linear-gradient(to right,var(--orange) 0 60%,var(--navy) 60% 100%);}
-.cover-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5mm;}
-.cover-char{width:25mm;height:29mm;}
+.cover-logo-wrap{display:flex;flex-direction:row;align-items:center;gap:3mm;}
+.cover-char{width:20mm;height:23mm;}
 
-.cover-title{text-align:center;margin:1mm 0 5mm;}
-.cover-title .main{font-size:23pt;font-weight:bold;color:var(--orange);letter-spacing:.1em;}
-.cover-title .sub{font-size:11pt;color:var(--ink-soft);letter-spacing:.1em;margin-top:1mm;}
+.cover-title{text-align:center;margin:0 0 3mm;}
+.cover-title .main{font-size:20pt;font-weight:bold;color:var(--orange);letter-spacing:.1em;}
+.cover-title .sub{font-size:10.5pt;color:var(--ink-soft);letter-spacing:.1em;margin-top:.5mm;}
 
 .prop-strip{
-  background:var(--orange-pale);border-radius:2.5mm;padding:4mm 6mm;font-size:10.5pt;color:#5a4f44;
-  display:flex;flex-wrap:wrap;gap:2mm 8mm;margin-bottom:5mm;
+  background:var(--orange-pale);border-radius:2.5mm;padding:2.8mm 6mm;font-size:10.5pt;color:#5a4f44;
+  display:flex;flex-wrap:wrap;gap:1mm 8mm;margin-bottom:0;
 }
 .prop-strip b{color:var(--brown);}
 
 /* 収支比較表(プレビュー) */
 .sim-wrap{flex:1;}
-.sim-table{width:100%;border-collapse:collapse;font-size:11pt;line-height:1.35;}
-.sim-table th,.sim-table td{border:.4mm solid var(--orange-line);padding:2.3mm 3mm;text-align:right;}
+.sim-table{width:100%;border-collapse:collapse;font-size:11pt;line-height:1.25;}
+.sim-table th,.sim-table td{border:.4mm solid var(--orange-line);padding:1.8mm 3mm;text-align:right;}
 .sim-table thead th{background:var(--orange);color:#fff;text-align:center;font-size:11.5pt;}
-.sim-table .rowhead{background:var(--orange-pale);font-weight:bold;text-align:left;width:44mm;font-size:10.5pt;color:var(--brown);line-height:1.4;}
+.sim-table .rowhead{background:var(--orange-pale);font-weight:bold;text-align:left;width:44mm;font-size:10.5pt;color:var(--brown);line-height:1.25;}
 .sim-table .p-big{font-size:13pt;font-weight:bold;color:var(--navy);}
 .sim-table .fee-zero{color:var(--red);font-weight:bold;}
 .sim-table .dash{color:#b9ad9c;}
 /* 費用内訳の区切り見出し行 */
-.sim-table tr.sub-sec td{background:var(--brown);color:#fff;font-weight:bold;text-align:left;font-size:10.5pt;letter-spacing:.04em;padding:2.2mm 3mm;}
+.sim-table tr.sub-sec td{background:var(--brown);color:#fff;font-weight:bold;text-align:left;font-size:10.5pt;letter-spacing:.04em;padding:1.6mm 3mm;}
 /* 諸経費の各項目行(やや控えめ) */
 .sim-table tr.exp-item .rowhead{background:#fdf6ec;font-weight:normal;color:#5a4f44;font-size:10pt;}
 .sim-table tr.exp-item td{font-size:10.5pt;}
 /* 費用合計 */
 .sim-table tr.subtotal td{background:#f7ead8;font-weight:bold;color:var(--brown);font-size:11pt;}
-.sim-table tr.net-row td{background:#fff2e2;color:var(--orange);font-weight:bold;font-size:18pt;padding:4mm 3mm;}
+.sim-table tr.net-row td{background:#fff2e2;color:var(--orange);font-weight:bold;font-size:17pt;padding:3mm;}
 .sim-table tr.net-row td.rowhead{font-size:12pt;color:var(--brown);background:var(--orange-pale);}
-.sim-note{font-size:9.5pt;color:var(--ink-soft);margin-top:4mm;line-height:1.75;}
-.disc-line{margin-top:3mm;font-size:10pt;color:var(--brown);font-weight:bold;}
+.sim-note{font-size:9.5pt;color:var(--ink-soft);margin-top:3mm;line-height:1.55;}
+.disc-line{margin-top:2.5mm;font-size:10pt;color:var(--brown);font-weight:bold;}
 /* 費用の説明(顧客向け) */
-.cost-legend{margin-top:4mm;background:#fffdf9;border:.4mm solid var(--orange-line);border-radius:2.5mm;padding:3.5mm 5mm;}
-.cost-legend h4{font-size:10.5pt;color:var(--brown);margin-bottom:2mm;}
+.cost-legend{margin-top:3mm;background:#fffdf9;border:.4mm solid var(--orange-line);border-radius:2.5mm;padding:2.6mm 5mm;}
+.cost-legend h4{font-size:10pt;color:var(--brown);margin-bottom:1mm;}
 .cost-legend ul{list-style:none;}
-.cost-legend li{font-size:9.7pt;line-height:1.7;color:#4a4036;padding-left:4.5mm;position:relative;}
+.cost-legend li{font-size:9.5pt;line-height:1.5;color:#4a4036;padding-left:4.5mm;position:relative;}
 .cost-legend li:before{content:"●";position:absolute;left:0;top:.2mm;color:var(--orange);font-size:7pt;}
 .cost-legend b{color:var(--navy);}
 
-/* --- P2 税金(読みやすさ優先・A4内に収まる寸法) --- */
-.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:3mm;}
-.tax-char{width:28mm;height:31mm;flex-shrink:0;}
-.tax-lead{font-size:10pt;line-height:1.75;color:#4a4036;}
+/* --- P2 税金(2ページ内に収めるため余白・行間を圧縮) --- */
+.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:2.5mm;}
+.tax-char{width:23mm;height:26mm;flex-shrink:0;}
+.tax-lead{font-size:9.7pt;line-height:1.6;color:#4a4036;}
 .tax-lead .em{color:var(--orange);font-weight:bold;}
 
 .tax-formula{
-  background:var(--orange-pale);border-radius:2.5mm;padding:2.8mm 5mm;text-align:center;
-  font-size:11.5pt;font-weight:bold;color:var(--brown);margin-bottom:3mm;letter-spacing:.02em;
+  background:var(--orange-pale);border-radius:2.5mm;padding:2.2mm 5mm;text-align:center;
+  font-size:11pt;font-weight:bold;color:var(--brown);margin-bottom:2.5mm;letter-spacing:.02em;
 }
-.tax-formula small{display:block;font-size:9pt;font-weight:normal;color:var(--ink-soft);margin-top:1.2mm;}
+.tax-formula small{display:block;font-size:8.8pt;font-weight:normal;color:var(--ink-soft);margin-top:.8mm;}
 
-.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm;}
-.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:2.8mm 4mm;background:#fffdf9;}
+.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm;}
+.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:2.2mm 3.5mm;background:#fffdf9;}
 .tax-box.full{grid-column:1 / -1;}
-.tax-box h3{font-size:10.7pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.5mm 3.5mm;margin-bottom:1.8mm;}
+.tax-box h3{font-size:10pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.2mm 3mm;margin-bottom:1.2mm;}
 .tax-box.hl h3{background:var(--orange);}
-.tax-box p,.tax-box li{font-size:9.7pt;line-height:1.65;color:#4a4036;}
-.tax-box ul{padding-left:5mm;margin-top:1mm;}
+.tax-box p,.tax-box li{font-size:9.5pt;line-height:1.45;color:#4a4036;}
+.tax-box ul{padding-left:4.5mm;margin-top:.6mm;}
 .tax-box .amt{color:var(--orange);font-weight:bold;}
-.tax-rate{display:flex;gap:4mm;margin-top:2mm;}
-.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:2.4mm;text-align:center;font-size:9.3pt;color:#5a4f44;}
-.tax-rate b{display:block;font-size:15pt;color:var(--orange);}
+.tax-rate{display:flex;gap:4mm;margin-top:1.5mm;}
+.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:1.8mm;text-align:center;font-size:9pt;color:#5a4f44;}
+.tax-rate b{display:block;font-size:14pt;color:var(--orange);}
 .tax-caution{
-  margin-top:3mm;background:#fdf3ea;border:.4mm solid var(--orange-line);border-left:1.5mm solid var(--orange);
-  border-radius:0 2mm 2mm 0;padding:2.4mm 4.5mm;font-size:9pt;color:#7a5230;line-height:1.6;
+  margin-top:2.5mm;background:#fdf3ea;border:.4mm solid var(--orange-line);border-left:1.5mm solid var(--orange);
+  border-radius:0 2mm 2mm 0;padding:2mm 4.5mm;font-size:8.8pt;color:#7a5230;line-height:1.45;
 }
 
 /* 連絡先 */
-.contact-grid{display:flex;gap:6mm;margin-top:5mm;align-items:stretch;}
-.contact-staff{background:var(--navy);color:#fff;border-radius:3mm;padding:3.5mm 5mm;flex:1;}
+.contact-grid{display:flex;gap:6mm;margin-top:4mm;align-items:stretch;}
+.contact-staff{background:var(--navy);color:#fff;border-radius:3mm;padding:2.8mm 5mm;flex:1;}
 .contact-staff .role{font-size:9pt;opacity:.85;}
-.contact-staff .nm{font-size:15pt;font-weight:bold;margin:.8mm 0 1.5mm;}
-.contact-staff .line{font-size:9.7pt;line-height:1.75;}
+.contact-staff .nm{font-size:14pt;font-weight:bold;margin:.5mm 0 1mm;}
+.contact-staff .line{font-size:9.5pt;line-height:1.55;}
 .contact-staff .line b{color:var(--orange-soft);}
 .contact-co{
-  background:var(--orange-pale);border-radius:3mm;padding:3.5mm 5mm;flex:1.2;
+  background:var(--orange-pale);border-radius:3mm;padding:2.8mm 5mm;flex:1.2;
   display:flex;flex-direction:column;justify-content:center;
 }
-.contact-co .co-name{font-size:14pt;font-weight:bold;color:var(--brown);margin-bottom:1mm;}
-.contact-co .line{font-size:9.7pt;line-height:1.75;color:#4a4036;}
-.contact-co .free{font-size:15pt;font-weight:bold;color:var(--orange);}
+.contact-co .co-name{font-size:13.5pt;font-weight:bold;color:var(--brown);margin-bottom:.5mm;}
+.contact-co .line{font-size:9.5pt;line-height:1.55;color:#4a4036;}
+.contact-co .free{font-size:14pt;font-weight:bold;color:var(--orange);}
+
+/* ============================================================
+   パスワードゲート(簡易アクセス制限)
+============================================================ */
+#gate{position:fixed;inset:0;z-index:1000;background:linear-gradient(150deg,var(--orange) 0%,var(--orange-soft) 100%);
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+#gate.hidden{display:none;}
+.gate-box{background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.2);padding:34px 30px;width:100%;max-width:360px;text-align:center;}
+.gate-logo{display:inline-block;background:var(--navy);color:#fff;font-weight:bold;letter-spacing:.08em;border-radius:6px;padding:6px 14px;font-size:15px;}
+.gate-title{font-size:16px;font-weight:bold;color:var(--brown);margin:14px 0 4px;}
+.gate-msg{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+#gatePass{width:100%;border:1.5px solid var(--orange-line);border-radius:8px;padding:11px 12px;font-size:15px;text-align:center;background:var(--cream);}
+#gatePass:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(227,130,60,.12);}
+#gateBtn{width:100%;margin-top:12px;background:var(--orange);color:#fff;border:none;border-radius:8px;padding:12px;font-size:15px;font-weight:bold;}
+#gateBtn:hover{background:#d6722e;}
+#gateErr{color:var(--red);font-size:12.5px;font-weight:bold;margin-top:10px;min-height:1em;}
+
+/* ブラウザ保存ステータス */
+#localStatus{max-width:920px;margin:-8px auto 10px;padding:0 16px;font-size:12.5px;color:var(--orange);font-weight:bold;text-align:right;min-height:1.1em;opacity:0;transition:.3s;}
+#localStatus.show{opacity:1;}
+
+/* プレビューは横スクロールを出さない(スマホでは縮小表示) */
+#pages{overflow-x:hidden;}
+
+/* ============================================================
+   スマートフォン対応
+============================================================ */
+@media screen and (max-width:760px){
+  #app{padding:12px 10px 70px;}
+  .app-header{padding:14px 16px;border-radius:10px;}
+  .app-header h1{font-size:17px;}
+  .app-header .sub{font-size:11px;}
+  .header-btns{width:100%;}
+  .header-btns button{flex:1 1 auto;font-size:12px;padding:8px 10px;}
+  #localStatus{text-align:center;margin:-2px auto 8px;}
+  .card{padding:16px 14px;}
+  .card h2{font-size:15px;}
+  .form-grid,.form-grid.cols-3{grid-template-columns:1fr;}
+  .exp-head{display:none;}
+  #expenseRows .exp-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+    border:1px solid var(--orange-line);border-radius:8px;padding:8px;}
+  #expenseRows .exp-row .exp-preset,#expenseRows .exp-row .exp-name{flex:1 1 100%;}
+  #expenseRows .exp-row .exp-amount{flex:1 1 130px;}
+  #expenseRows .exp-row .kaitori-exempt{flex:0 0 auto;}
+  #expenseRows .exp-row .del-btn{flex:0 0 auto;margin-left:auto;width:42px;}
+  #previewBtn{width:100%;padding:14px 20px;font-size:16px;}
+  #previewToolbar{padding:9px 12px;}
+  #previewToolbar button{flex:1 1 auto;}
+  #previewToolbar .print-hint{display:none;}
+  #pages{padding:10px 0 40px;}
+}
 
 /* ============================================================
    印刷
 ============================================================ */
-@page{size:A4 portrait;margin:12mm;}
+@page{size:A4 portrait;margin:10mm;}
 @media print{
   body{background:#fff;}
+  #gate{display:none !important;}
+  #localStatus{display:none !important;}
   #app{display:none !important;}
   #previewMode{display:block !important;}
   #previewToolbar{display:none !important;}
@@ -345,6 +397,20 @@ body.preview #previewMode{display:block;}
 <body>
 
 <!-- ============================================================
+     パスワードゲート(簡易アクセス制限)
+============================================================ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">ESTATE ViVi</div>
+    <div class="gate-title">不動産売却 収支計算ツール</div>
+    <p class="gate-msg">ご利用にはパスワードが必要です</p>
+    <input type="password" id="gatePass" placeholder="パスワード" autocomplete="current-password">
+    <button id="gateBtn" type="button">開く</button>
+    <div id="gateErr"></div>
+  </div>
+</div>
+
+<!-- ============================================================
      入力モード(担当者用)
 ============================================================ -->
 <div id="app">
@@ -354,11 +420,15 @@ body.preview #previewMode{display:block;}
       <div class="sub">ViVi不動産株式会社|仲介手数料・印紙税・手取り額シミュレーション</div>
     </div>
     <div class="header-btns">
-      <button id="exportBtn" type="button">💾 JSON保存</button>
-      <button id="importBtn" type="button">📂 JSON読込</button>
+      <button id="saveLocalBtn" type="button">💾 ブラウザに保存</button>
+      <button id="loadLocalBtn" type="button">↩ 保存を呼び出す</button>
+      <button id="clearLocalBtn" type="button">🗑 保存を消去</button>
+      <button id="exportBtn" type="button">⬇ ファイル保存</button>
+      <button id="importBtn" type="button">⬆ ファイル読込</button>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none">
     </div>
   </div>
+  <div id="localStatus"></div>
 
   <!-- 担当者・会社設定 -->
   <div class="card">
@@ -522,7 +592,7 @@ body.preview #previewMode{display:block;}
   <div id="previewToolbar">
     <button id="backBtn" type="button">◀ 入力に戻る</button>
     <button id="printBtn" type="button">🖨 PDFに保存 / 印刷</button>
-    <span class="print-hint">※印刷ダイアログで「背景のグラフィック」を有効に、用紙A4・余白「なし」を推奨</span>
+    <span class="print-hint">※色付きの背景を印刷するには、印刷ダイアログで「背景のグラフィック」を有効にしてください。</span>
   </div>
   <div id="pages"></div>
 </div>
@@ -906,16 +976,35 @@ function showPreview(){
   buildPreview();
   document.body.classList.add("preview");
   window.scrollTo(0, 0);
+  fitPreview();
+}
+
+// スマホなど画面が狭い場合、A4幅(210mm)の提案書を画面幅に合わせて縮小表示する
+// (印刷時は等倍に戻すため beforeprint で解除)
+function fitPreview(){
+  const doc = document.querySelector(".doc");
+  if (!doc) return;
+  doc.style.transform = "none";
+  doc.style.marginBottom = "";
+  const avail = $("pages").clientWidth - 4;
+  const w = doc.offsetWidth;
+  if (avail < w) {
+    const s = avail / w;
+    doc.style.transformOrigin = "top left";
+    doc.style.transform = "scale(" + s + ")";
+    // 縮小で生じる余白(レイアウト箱は原寸のまま)を打ち消す
+    doc.style.marginBottom = (-(doc.offsetHeight * (1 - s))) + "px";
+  }
 }
 function backToInput(){
   document.body.classList.remove("preview");
 }
 
 /* ============================================================
-   JSON 保存 / 読込(物件ごとのデータ)
+   物件データの収集 / 反映(JSON・ブラウザ保存で共通利用)
 ============================================================ */
-function exportJson(){
-  const data = {
+function collectDeal(){
+  return {
     customerName: val("customerName"),
     propertyName: val("propertyName"),
     address: val("address"),
@@ -927,6 +1016,28 @@ function exportJson(){
     loanBalance: num("loanBalance"),
     expenses: getExpenses(),
   };
+}
+function applyDeal(d){
+  if (!d) return;
+  $("customerName").value = d.customerName || "";
+  $("propertyName").value = d.propertyName || "";
+  $("address").value = d.address || "";
+  $("priceChallenge").value = d.priceChallenge || "";
+  $("priceTeian").value = d.priceTeian || "";
+  $("priceSatei").value = d.priceSatei || "";
+  $("priceKaitori").value = d.priceKaitori || "";
+  $("discountToggle").checked = !!d.discount;
+  $("discountStateText").textContent = d.discount ? "適用する" : "適用しない";
+  $("loanBalance").value = d.loanBalance || "";
+  $("expenseRows").innerHTML = "";
+  (d.expenses || []).forEach(e => addExpenseRow(e.name, e.amount, e.kaitoriExempt));
+  if (!d.expenses || !d.expenses.length) addExpenseRow();
+  renderCalcSummary();
+}
+
+// ファイル(JSON)へ保存 / 読込
+function exportJson(){
+  const data = collectDeal();
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -938,27 +1049,39 @@ function exportJson(){
 function importJson(file){
   const reader = new FileReader();
   reader.onload = () => {
-    try {
-      const d = JSON.parse(reader.result);
-      $("customerName").value = d.customerName || "";
-      $("propertyName").value = d.propertyName || "";
-      $("address").value = d.address || "";
-      $("priceChallenge").value = d.priceChallenge || "";
-      $("priceTeian").value = d.priceTeian || "";
-      $("priceSatei").value = d.priceSatei || "";
-      $("priceKaitori").value = d.priceKaitori || "";
-      $("discountToggle").checked = !!d.discount;
-      $("discountStateText").textContent = d.discount ? "適用する" : "適用しない";
-      $("loanBalance").value = d.loanBalance || "";
-      $("expenseRows").innerHTML = "";
-      (d.expenses || []).forEach(e => addExpenseRow(e.name, e.amount, e.kaitoriExempt));
-      if (!d.expenses || !d.expenses.length) addExpenseRow();
-      renderCalcSummary();
-    } catch (err) {
-      alert("JSONの読み込みに失敗しました:" + err.message);
-    }
+    try { applyDeal(JSON.parse(reader.result)); }
+    catch (err) { alert("JSONの読み込みに失敗しました:" + err.message); }
   };
   reader.readAsText(file);
+}
+
+/* ============================================================
+   ブラウザ(localStorage)へ保存 / 呼び出し / 消去
+============================================================ */
+const DEAL_KEY = "viviDealDraft";
+function flashLocal(msg){
+  const el = $("localStatus");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2400);
+}
+function saveLocal(){
+  try {
+    localStorage.setItem(DEAL_KEY, JSON.stringify(collectDeal()));
+    flashLocal("💾 この内容をブラウザに保存しました");
+  } catch (e) { alert("ブラウザへの保存に失敗しました:" + e.message); }
+}
+function loadLocal(){
+  const raw = localStorage.getItem(DEAL_KEY);
+  if (!raw) { alert("このブラウザに保存されたデータはありません。"); return; }
+  try { applyDeal(JSON.parse(raw)); flashLocal("↩ 保存した内容を呼び出しました"); }
+  catch (e) { alert("読み込みに失敗しました:" + e.message); }
+}
+function clearLocal(){
+  if (!localStorage.getItem(DEAL_KEY)) { alert("このブラウザに保存されたデータはありません。"); return; }
+  if (!confirm("このブラウザに保存した内容を消去しますか?(入力中のフォームはそのままです)")) return;
+  localStorage.removeItem(DEAL_KEY);
+  flashLocal("🗑 ブラウザの保存内容を消去しました");
 }
 
 /* ============================================================
@@ -1151,9 +1274,43 @@ function markExtractStatus(f){
 }
 
 /* ============================================================
+   パスワードゲート(簡易アクセス制限)
+   ※公開URLのため強固な認証ではありません。気軽な入室制限です。
+============================================================ */
+const PASS_HASH = 768286507;   // パスワードの簡易ハッシュ(平文をソースに残さない)
+const AUTH_KEY = "viviAuthed";
+function simpleHash(s){
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+function openGate(){
+  $("gate").classList.add("hidden");
+  try { sessionStorage.setItem(AUTH_KEY, "1"); } catch (e) {}
+}
+function tryGate(){
+  if (simpleHash($("gatePass").value) === PASS_HASH) {
+    $("gateErr").textContent = "";
+    openGate();
+  } else {
+    $("gateErr").textContent = "パスワードが違います。";
+    $("gatePass").select();
+  }
+}
+function initGate(){
+  let authed = false;
+  try { authed = sessionStorage.getItem(AUTH_KEY) === "1"; } catch (e) {}
+  if (authed) { $("gate").classList.add("hidden"); return; }
+  $("gateBtn").addEventListener("click", tryGate);
+  $("gatePass").addEventListener("keydown", e => { if (e.key === "Enter") tryGate(); });
+  $("gatePass").focus();
+}
+
+/* ============================================================
    初期化
 ============================================================ */
 function init(){
+  initGate();            // パスワードゲート
   loadStaff();           // 保存済みの担当者設定を復元
   addExpenseRow();       // 諸経費の初期行
 
@@ -1177,6 +1334,11 @@ function init(){
     if (file) handlePdf(file);
   });
 
+  // ブラウザ保存
+  $("saveLocalBtn").addEventListener("click", saveLocal);
+  $("loadLocalBtn").addEventListener("click", loadLocal);
+  $("clearLocalBtn").addEventListener("click", clearLocal);
+  // ファイル(JSON)保存・読込
   $("exportBtn").addEventListener("click", exportJson);
   $("importBtn").addEventListener("click", () => $("importFile").click());
   $("importFile").addEventListener("change", e => { if (e.target.files[0]) importJson(e.target.files[0]); });
@@ -1184,6 +1346,15 @@ function init(){
   $("previewBtn").addEventListener("click", showPreview);
   $("backBtn").addEventListener("click", backToInput);
   $("printBtn").addEventListener("click", () => window.print());
+
+  // スマホでのプレビュー縮小:画面回転・リサイズに追従
+  window.addEventListener("resize", () => { if (document.body.classList.contains("preview")) fitPreview(); });
+  // 印刷時は等倍に戻し、印刷後に再フィット
+  window.addEventListener("beforeprint", () => {
+    const doc = document.querySelector(".doc");
+    if (doc) { doc.style.transform = "none"; doc.style.marginBottom = ""; }
+  });
+  window.addEventListener("afterprint", fitPreview);
 
   renderCalcSummary();
 }
