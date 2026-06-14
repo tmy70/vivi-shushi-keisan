@@ -199,7 +199,7 @@ body.preview #previewMode{display:block;}
   box-shadow:0 3px 16px rgba(0,0,0,.22);
 }
 .doc-section{margin-top:7mm;}
-.doc-section.tax{break-before:page;page-break-before:always;}
+.doc-section.tax{margin-top:9mm;}
 
 /* キャラクター画像 */
 .imgbox{position:relative;display:flex;align-items:center;justify-content:center;}
@@ -323,7 +323,7 @@ body.preview #previewMode{display:block;}
 /* ============================================================
    印刷
 ============================================================ */
-@page{size:A4 portrait;margin:14mm 14mm;}
+@page{size:A4 portrait;margin:12mm;}
 @media print{
   body{background:#fff;}
   #app{display:none !important;}
@@ -331,12 +331,13 @@ body.preview #previewMode{display:block;}
   #previewToolbar{display:none !important;}
   #pages{padding:0;}
   .doc{width:auto;margin:0;padding:0;box-shadow:none;}
-  /* 税金は新しいページから */
-  .doc-section.tax{break-before:page;page-break-before:always;}
+  /* 連続フロー:内容に応じて自動で改ページ(強制改ページはしない=空ページを作らない) */
   /* 表が複数ページに分かれてもヘッダーを繰り返し、行の途中では切らない */
   .sim-table thead{display:table-header-group;}
   .sim-table tr{break-inside:avoid;page-break-inside:avoid;}
   .tax-intro,.tax-formula,.tax-box,.cost-legend,.contact-grid,.sim-note,.disc-line{break-inside:avoid;page-break-inside:avoid;}
+  /* 見出しがページ末尾で孤立しないように(直後の内容と一緒に送る) */
+  .sec-head,.cover-head,.cover-title{break-after:avoid;page-break-after:avoid;break-inside:avoid;}
   .imgbox.missing{visibility:hidden;}
 }
 </style>
@@ -816,7 +817,7 @@ function buildPreview(){
       <div class="sim-note">
         <b>お手元に残る概算額 = 売買価格 −(費用 合計 ＋ 住宅ローン残債)</b><br>
         ※上記は概算であり、お手元に残る金額を保証するものではありません。<br>
-        ※譲渡所得税・引越し費用などは含みません。物件の状況により別途費用がかかる場合があります(税金については別ページでご説明します)。
+        ※譲渡所得税・引越し費用などは含みません。物件の状況により別途費用がかかる場合があります(税金についてはこのあとご説明します)。
       </div>
     </div>`;
 
