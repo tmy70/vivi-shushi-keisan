@@ -193,11 +193,13 @@ body.preview #previewMode{display:block;}
 #previewToolbar .print-hint{font-size:11.5px;opacity:.9;}
 
 #pages{padding:22px 0 60px;}
-.page{
-  width:210mm;height:296mm;background:#fff;margin:0 auto 18px;
-  box-shadow:0 3px 16px rgba(0,0,0,.22);position:relative;overflow:hidden;
-  padding:16mm 16mm 14mm;display:flex;flex-direction:column;
+/* 連続フロー(内容量に応じて印刷時に自動改ページ) */
+.doc{
+  width:210mm;background:#fff;margin:0 auto;padding:16mm;
+  box-shadow:0 3px 16px rgba(0,0,0,.22);
 }
+.doc-section{margin-top:7mm;}
+.doc-section.tax{break-before:page;page-break-before:always;}
 
 /* キャラクター画像 */
 .imgbox{position:relative;display:flex;align-items:center;justify-content:center;}
@@ -205,7 +207,7 @@ body.preview #previewMode{display:block;}
 .imgbox.missing img{display:none;}
 
 /* ViViロゴ(画像。読み込み失敗時は下のテキストロゴにフォールバック) */
-.cover-logo img{width:24mm;height:24mm;object-fit:contain;display:block;}
+.cover-logo img{width:20mm;height:20mm;object-fit:contain;display:block;}
 .vivi-logo{
   display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
   background:var(--navy);color:#fff;border-radius:2mm;padding:2.5mm 4mm;
@@ -221,100 +223,120 @@ body.preview #previewMode{display:block;}
 .sec-head .no{font-size:10pt;color:#fff;opacity:.85;font-weight:bold;letter-spacing:.1em;white-space:nowrap;}
 .sec-head h2{font-size:17pt;letter-spacing:.06em;font-weight:bold;}
 
-.page-foot{
-  position:absolute;bottom:7mm;left:16mm;right:16mm;display:flex;justify-content:space-between;align-items:center;
-  font-size:8pt;color:#a99;border-top:.4mm solid var(--orange-line);padding-top:2mm;
+.doc-foot{
+  margin-top:8mm;display:flex;justify-content:space-between;align-items:center;
+  font-size:8.8pt;color:#a99;border-top:.4mm solid var(--orange-line);padding-top:2mm;
 }
-.page-foot .brand{color:var(--brown);font-weight:bold;letter-spacing:.08em;}
+.doc-foot .brand{color:var(--brown);font-weight:bold;letter-spacing:.08em;}
 
-/* --- P1 ヘッダー(お客様名+物件) --- */
-.cover-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8mm;margin-bottom:6mm;}
+/* --- ヘッダー(お客様名+物件) --- */
+.cover-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8mm;margin-bottom:6mm;
+  border-bottom:.8mm solid var(--orange-line);padding-bottom:5mm;}
 .cover-cust .greet{font-size:11pt;color:var(--ink-soft);}
 .cover-cust .cname{font-size:21pt;font-weight:bold;color:var(--brown);letter-spacing:.03em;}
 .cover-cust .bar{display:block;width:34mm;height:1.6mm;margin-top:2mm;border-radius:1mm;
   background:linear-gradient(to right,var(--orange) 0 60%,var(--navy) 60% 100%);}
-.cover-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:2mm;}
-.cover-char{width:30mm;height:36mm;}
+.cover-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:1.5mm;}
+.cover-char{width:25mm;height:29mm;}
 
-.cover-title{text-align:center;margin:2mm 0 7mm;}
-.cover-title .main{font-size:26pt;font-weight:bold;color:var(--orange);letter-spacing:.12em;}
+.cover-title{text-align:center;margin:1mm 0 5mm;}
+.cover-title .main{font-size:23pt;font-weight:bold;color:var(--orange);letter-spacing:.1em;}
 .cover-title .sub{font-size:11pt;color:var(--ink-soft);letter-spacing:.1em;margin-top:1mm;}
 
 .prop-strip{
-  background:var(--orange-pale);border-radius:2.5mm;padding:3.5mm 6mm;font-size:9.5pt;color:#6a5c4d;
-  display:flex;flex-wrap:wrap;gap:2mm 8mm;margin-bottom:6mm;
+  background:var(--orange-pale);border-radius:2.5mm;padding:4mm 6mm;font-size:10.5pt;color:#5a4f44;
+  display:flex;flex-wrap:wrap;gap:2mm 8mm;margin-bottom:5mm;
 }
 .prop-strip b{color:var(--brown);}
 
 /* 収支比較表(プレビュー) */
 .sim-wrap{flex:1;}
-.sim-table{width:100%;border-collapse:collapse;font-size:10pt;}
-.sim-table th,.sim-table td{border:.4mm solid var(--orange-line);padding:3mm;text-align:right;}
-.sim-table thead th{background:var(--orange);color:#fff;text-align:center;font-size:10.5pt;}
-.sim-table thead th.rec{background:var(--brown);}
-.sim-table .rowhead{background:var(--orange-pale);font-weight:bold;text-align:left;width:34mm;font-size:9.5pt;color:var(--brown);}
-.sim-table .p-big{font-size:12pt;font-weight:bold;color:var(--navy);}
+.sim-table{width:100%;border-collapse:collapse;font-size:11pt;line-height:1.35;}
+.sim-table th,.sim-table td{border:.4mm solid var(--orange-line);padding:2.3mm 3mm;text-align:right;}
+.sim-table thead th{background:var(--orange);color:#fff;text-align:center;font-size:11.5pt;}
+.sim-table .rowhead{background:var(--orange-pale);font-weight:bold;text-align:left;width:44mm;font-size:10.5pt;color:var(--brown);line-height:1.4;}
+.sim-table .p-big{font-size:13pt;font-weight:bold;color:var(--navy);}
 .sim-table .fee-zero{color:var(--red);font-weight:bold;}
-.sim-table tr.net-row td{background:#fff2e2;color:var(--orange);font-weight:bold;font-size:18pt;padding:4.5mm 3mm;}
-.sim-table tr.net-row td.rowhead{font-size:11pt;color:var(--brown);background:var(--orange-pale);}
-.sim-note{font-size:8.5pt;color:var(--ink-soft);margin-top:5mm;line-height:1.7;}
-.disc-line{margin-top:3mm;font-size:9pt;color:var(--brown);font-weight:bold;}
+.sim-table .dash{color:#b9ad9c;}
+/* 費用内訳の区切り見出し行 */
+.sim-table tr.sub-sec td{background:var(--brown);color:#fff;font-weight:bold;text-align:left;font-size:10.5pt;letter-spacing:.04em;padding:2.2mm 3mm;}
+/* 諸経費の各項目行(やや控えめ) */
+.sim-table tr.exp-item .rowhead{background:#fdf6ec;font-weight:normal;color:#5a4f44;font-size:10pt;}
+.sim-table tr.exp-item td{font-size:10.5pt;}
+/* 費用合計 */
+.sim-table tr.subtotal td{background:#f7ead8;font-weight:bold;color:var(--brown);font-size:11pt;}
+.sim-table tr.net-row td{background:#fff2e2;color:var(--orange);font-weight:bold;font-size:18pt;padding:4mm 3mm;}
+.sim-table tr.net-row td.rowhead{font-size:12pt;color:var(--brown);background:var(--orange-pale);}
+.sim-note{font-size:9.5pt;color:var(--ink-soft);margin-top:4mm;line-height:1.75;}
+.disc-line{margin-top:3mm;font-size:10pt;color:var(--brown);font-weight:bold;}
+/* 費用の説明(顧客向け) */
+.cost-legend{margin-top:4mm;background:#fffdf9;border:.4mm solid var(--orange-line);border-radius:2.5mm;padding:3.5mm 5mm;}
+.cost-legend h4{font-size:10.5pt;color:var(--brown);margin-bottom:2mm;}
+.cost-legend ul{list-style:none;}
+.cost-legend li{font-size:9.7pt;line-height:1.7;color:#4a4036;padding-left:4.5mm;position:relative;}
+.cost-legend li:before{content:"●";position:absolute;left:0;top:.2mm;color:var(--orange);font-size:7pt;}
+.cost-legend b{color:var(--navy);}
 
-/* --- P2 税金(A4内に確実に収まるよう詰めた寸法) --- */
-.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:3.5mm;}
-.tax-char{width:30mm;height:33mm;flex-shrink:0;}
-.tax-lead{font-size:9pt;line-height:1.7;color:#4a4036;}
+/* --- P2 税金(読みやすさ優先・A4内に収まる寸法) --- */
+.tax-intro{display:flex;gap:5mm;align-items:center;margin-bottom:3mm;}
+.tax-char{width:28mm;height:31mm;flex-shrink:0;}
+.tax-lead{font-size:10pt;line-height:1.75;color:#4a4036;}
 .tax-lead .em{color:var(--orange);font-weight:bold;}
 
 .tax-formula{
-  background:var(--orange-pale);border-radius:2.5mm;padding:3mm 5mm;text-align:center;
-  font-size:11pt;font-weight:bold;color:var(--brown);margin-bottom:3.5mm;letter-spacing:.02em;
+  background:var(--orange-pale);border-radius:2.5mm;padding:2.8mm 5mm;text-align:center;
+  font-size:11.5pt;font-weight:bold;color:var(--brown);margin-bottom:3mm;letter-spacing:.02em;
 }
-.tax-formula small{display:block;font-size:8pt;font-weight:normal;color:var(--ink-soft);margin-top:1.2mm;}
+.tax-formula small{display:block;font-size:9pt;font-weight:normal;color:var(--ink-soft);margin-top:1.2mm;}
 
-.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm;}
-.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:3mm 4mm;background:#fffdf9;}
+.tax-grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm;}
+.tax-box{border:.5mm solid var(--orange-line);border-radius:3mm;padding:2.8mm 4mm;background:#fffdf9;}
 .tax-box.full{grid-column:1 / -1;}
-.tax-box h3{font-size:10pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.4mm 3.5mm;margin-bottom:1.5mm;}
+.tax-box h3{font-size:10.7pt;color:#fff;background:var(--orange-soft);border-radius:2mm;padding:1.5mm 3.5mm;margin-bottom:1.8mm;}
 .tax-box.hl h3{background:var(--orange);}
-.tax-box p,.tax-box li{font-size:8.7pt;line-height:1.6;color:#4a4036;}
-.tax-box ul{padding-left:5mm;margin-top:.8mm;}
+.tax-box p,.tax-box li{font-size:9.7pt;line-height:1.65;color:#4a4036;}
+.tax-box ul{padding-left:5mm;margin-top:1mm;}
 .tax-box .amt{color:var(--orange);font-weight:bold;}
 .tax-rate{display:flex;gap:4mm;margin-top:2mm;}
-.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:2.2mm;text-align:center;font-size:8.5pt;color:#5a4f44;}
-.tax-rate b{display:block;font-size:14pt;color:var(--orange);}
+.tax-rate div{flex:1;background:var(--orange-pale);border-radius:2mm;padding:2.4mm;text-align:center;font-size:9.3pt;color:#5a4f44;}
+.tax-rate b{display:block;font-size:15pt;color:var(--orange);}
 .tax-caution{
   margin-top:3mm;background:#fdf3ea;border:.4mm solid var(--orange-line);border-left:1.5mm solid var(--orange);
-  border-radius:0 2mm 2mm 0;padding:2.2mm 4.5mm;font-size:8pt;color:#7a5230;line-height:1.55;
+  border-radius:0 2mm 2mm 0;padding:2.4mm 4.5mm;font-size:9pt;color:#7a5230;line-height:1.6;
 }
 
-/* 連絡先(margin-top:autoで下寄せしつつ、絶対配置フッターと重ならないよう下マージンを確保) */
-.contact-grid{display:flex;gap:6mm;margin-top:auto;margin-bottom:4mm;align-items:stretch;}
+/* 連絡先 */
+.contact-grid{display:flex;gap:6mm;margin-top:5mm;align-items:stretch;}
 .contact-staff{background:var(--navy);color:#fff;border-radius:3mm;padding:3.5mm 5mm;flex:1;}
-.contact-staff .role{font-size:8.5pt;opacity:.85;}
-.contact-staff .nm{font-size:14pt;font-weight:bold;margin:.5mm 0 1mm;}
-.contact-staff .line{font-size:9pt;line-height:1.7;}
+.contact-staff .role{font-size:9pt;opacity:.85;}
+.contact-staff .nm{font-size:15pt;font-weight:bold;margin:.8mm 0 1.5mm;}
+.contact-staff .line{font-size:9.7pt;line-height:1.75;}
 .contact-staff .line b{color:var(--orange-soft);}
 .contact-co{
   background:var(--orange-pale);border-radius:3mm;padding:3.5mm 5mm;flex:1.2;
   display:flex;flex-direction:column;justify-content:center;
 }
-.contact-co .co-name{font-size:13pt;font-weight:bold;color:var(--brown);margin-bottom:.5mm;}
-.contact-co .line{font-size:9pt;line-height:1.7;color:#4a4036;}
-.contact-co .free{font-size:14pt;font-weight:bold;color:var(--orange);}
+.contact-co .co-name{font-size:14pt;font-weight:bold;color:var(--brown);margin-bottom:1mm;}
+.contact-co .line{font-size:9.7pt;line-height:1.75;color:#4a4036;}
+.contact-co .free{font-size:15pt;font-weight:bold;color:var(--orange);}
 
 /* ============================================================
    印刷
 ============================================================ */
-@page{size:A4 portrait;margin:0;}
+@page{size:A4 portrait;margin:14mm 14mm;}
 @media print{
   body{background:#fff;}
   #app{display:none !important;}
   #previewMode{display:block !important;}
   #previewToolbar{display:none !important;}
   #pages{padding:0;}
-  .page{margin:0;box-shadow:none;page-break-after:always;width:210mm;height:296mm;}
-  .page:last-child{page-break-after:auto;}
+  .doc{width:auto;margin:0;padding:0;box-shadow:none;}
+  /* 税金は新しいページから */
+  .doc-section.tax{break-before:page;page-break-before:always;}
+  /* 表が複数ページに分かれてもヘッダーを繰り返し、行の途中では切らない */
+  .sim-table thead{display:table-header-group;}
+  .sim-table tr{break-inside:avoid;page-break-inside:avoid;}
+  .tax-intro,.tax-formula,.tax-box,.cost-legend,.contact-grid,.sim-note,.disc-line{break-inside:avoid;page-break-inside:avoid;}
   .imgbox.missing{visibility:hidden;}
 }
 </style>
@@ -718,27 +740,54 @@ function buildPreview(){
 
   let table;
   if (!plans.length) {
-    table = '<p style="font-size:11pt;color:#888;text-align:center;padding:30mm 0;">価格情報が未入力です。入力モードで売買価格を入力してください。</p>';
+    table = '<p style="font-size:12pt;color:#888;text-align:center;padding:30mm 0;">価格情報が未入力です。入力モードで売買価格を入力してください。</p>';
   } else {
+    const disc = st.discount ? "(5%割引)" : "";
+    const cols = plans.length + 1;
     let h = "<table class='sim-table'><thead><tr><th></th>" +
       plans.map(p=>`<th>${p.label}</th>`).join("") + "</tr></thead><tbody>";
+    // 売買価格
     h += "<tr><td class='rowhead'>売買価格</td>" + plans.map(p=>`<td class="p-big">${yen(p.price)}</td>`).join("") + "</tr>";
-    h += `<tr><td class='rowhead'>仲介手数料${st.discount?'<br><small>(5%割引適用)</small>':''}</td>` +
+    // 費用内訳の見出し
+    h += `<tr class='sub-sec'><td colspan='${cols}'>ご売却にかかる費用(概算)の内訳</td></tr>`;
+    // 仲介手数料
+    h += `<tr><td class='rowhead'>仲介手数料${disc}</td>` +
       plans.map(p=>`<td>${p.kaitori ? '<span class="fee-zero">0円(不要)</span>' : yen(p.fee)}</td>`).join("") + "</tr>";
+    // 印紙税
     h += "<tr><td class='rowhead'>印紙税</td>" + plans.map(p=>`<td>${yen(p.stamp)}</td>`).join("") + "</tr>";
-    h += "<tr><td class='rowhead'>諸経費</td>" + plans.map(p=>`<td>${yen(p.exp)}</td>`).join("") + "</tr>";
+    // 諸経費(各項目を内訳として記載)
+    st.expenses.forEach(e => {
+      h += `<tr class='exp-item'><td class='rowhead'>${esc(e.name || "諸経費")}</td>` +
+        plans.map(p=>`<td>${(p.kaitori && e.kaitoriExempt) ? '<span class="dash">—(不要)</span>' : yen(e.amount)}</td>`).join("") + "</tr>";
+    });
+    // 費用合計
+    h += "<tr class='subtotal'><td class='rowhead'>費用 合計</td>" +
+      plans.map(p=>`<td>${yen(p.fee + p.stamp + p.exp)}</td>`).join("") + "</tr>";
+    // 住宅ローン残債
     if (st.loanBalance > 0) {
-      h += "<tr><td class='rowhead'>ローン残債</td>" + plans.map(()=>`<td>${yen(st.loanBalance)}</td>`).join("") + "</tr>";
+      h += "<tr><td class='rowhead'>住宅ローン残債</td>" + plans.map(()=>`<td>${yen(st.loanBalance)}</td>`).join("") + "</tr>";
     }
-    h += "<tr class='net-row'><td class='rowhead'>お手元に残る<br>概算額</td>" + plans.map(p=>`<td>${yen(p.net)}</td>`).join("") + "</tr>";
+    // お手元に残る概算額
+    h += "<tr class='net-row'><td class='rowhead'>お手元に残る概算額</td>" + plans.map(p=>`<td>${yen(p.net)}</td>`).join("") + "</tr>";
     h += "</tbody></table>";
     table = h;
   }
   const discLine = st.discount
     ? '<div class="disc-line">★ 当社専任媒介契約のサービスとして、仲介手数料5%割引を適用した金額です。</div>' : "";
 
-  const page1 = `
-  <div class="page">
+  // 費用の説明(顧客向け)
+  const costLegend = plans.length ? `
+    <div class="cost-legend">
+      <h4>■ 費用の内容について</h4>
+      <ul>
+        <li><b>仲介手数料</b>:ご成約時にいただく成功報酬です。「売買価格×3%＋6万円＋消費税」が法定上限${st.discount ? "(当社専任媒介では5%割引を適用)" : ""}。買取の場合は不要です。</li>
+        <li><b>印紙税</b>:売買契約書に貼付する印紙代です(売買価格に応じて金額が決まります)。</li>
+        ${st.expenses.length ? "<li><b>諸経費</b>:抵当権の抹消・各種登記・建物解体・残置物の処分・補修など、物件の状況に応じてかかる費用です。</li>" : ""}
+      </ul>
+    </div>` : "";
+
+  const docHead = `
+  <div class="doc">
     <div class="cover-head">
       <div class="cover-cust">
         <div class="cname">${custDisp}</div>
@@ -760,26 +809,21 @@ function buildPreview(){
 
     <div class="prop-strip">${propItems.join("")}</div>
 
-    <div class="sim-wrap">
+    <div class="doc-section">
       ${table}
       ${discLine}
+      ${costLegend}
       <div class="sim-note">
+        <b>お手元に残る概算額 = 売買価格 −(費用 合計 ＋ 住宅ローン残債)</b><br>
         ※上記は概算であり、お手元に残る金額を保証するものではありません。<br>
-        ※譲渡所得税・登記費用・測量費用など、物件の状況により別途費用がかかる場合があります。詳細は次ページおよび担当者までご確認ください。
+        ※譲渡所得税・引越し費用などは含みません。物件の状況により別途費用がかかる場合があります(税金については別ページでご説明します)。
       </div>
-    </div>
+    </div>`;
 
-    <div class="page-foot">
-      <span>${esc(staff.companyName)}</span>
-      <span class="brand">ESTATE ViVi</span>
-      <span>1</span>
-    </div>
-  </div>`;
-
-  /* ---- P2:税金の説明 ---- */
-  const page2 = `
-  <div class="page">
-    <div class="sec-head"><span class="no">TAX</span><h2>ご売却にかかる税金について</h2></div>
+  /* ---- 税金の説明(印刷時は新しいページから) ---- */
+  const docTax = `
+    <div class="doc-section tax">
+      <div class="sec-head"><span class="no">TAX</span><h2>ご売却にかかる税金について</h2></div>
 
     <div class="tax-intro">
       <div class="tax-char">${imgTag(CHAR_PROF,'')}</div>
@@ -846,14 +890,15 @@ function buildPreview(){
       </div>
     </div>
 
-    <div class="page-foot">
+    </div>
+
+    <div class="doc-foot">
       <span>${esc(staff.companyName)}</span>
       <span class="brand">ESTATE ViVi</span>
-      <span>2</span>
     </div>
   </div>`;
 
-  $("pages").innerHTML = page1 + page2;
+  $("pages").innerHTML = docHead + docTax;
 }
 
 function showPreview(){
