@@ -335,8 +335,16 @@ body.preview #previewMode{display:block;}
 #gateBtn:hover{background:#d6722e;}
 #gateErr{color:var(--red);font-size:12.5px;font-weight:bold;margin-top:10px;min-height:1em;}
 
-/* ブラウザ保存ステータス */
-#localStatus{max-width:920px;margin:-8px auto 10px;padding:0 16px;font-size:12.5px;color:var(--orange);font-weight:bold;text-align:right;min-height:1.1em;opacity:0;transition:.3s;}
+/* ブラウザ保存(複数・タイトル付き) */
+.save-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.save-controls #savedList{flex:1 1 220px;min-width:140px;border:1.5px solid var(--orange-line);border-radius:8px;padding:9px 11px;background:var(--cream);}
+.save-controls #savedList:focus{outline:none;border-color:var(--orange);background:#fff;box-shadow:0 0 0 3px rgba(227,130,60,.12);}
+.save-controls button{border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:bold;}
+#saveLocalBtn{background:var(--orange);color:#fff;}
+#saveLocalBtn:hover{background:#d6722e;}
+#loadLocalBtn{background:var(--navy);color:#fff;}
+#clearLocalBtn{background:var(--orange-pale);color:var(--red);}
+#localStatus{font-size:12.5px;color:var(--orange);font-weight:bold;margin-top:10px;min-height:1.1em;opacity:0;transition:.3s;}
 #localStatus.show{opacity:1;}
 
 /* プレビューは横スクロールを出さない(スマホでは縮小表示) */
@@ -420,15 +428,24 @@ body.preview #previewMode{display:block;}
       <div class="sub">ViVi不動産株式会社|仲介手数料・印紙税・手取り額シミュレーション</div>
     </div>
     <div class="header-btns">
-      <button id="saveLocalBtn" type="button">💾 ブラウザに保存</button>
-      <button id="loadLocalBtn" type="button">↩ 保存を呼び出す</button>
-      <button id="clearLocalBtn" type="button">🗑 保存を消去</button>
       <button id="exportBtn" type="button">⬇ ファイル保存</button>
       <button id="importBtn" type="button">⬆ ファイル読込</button>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none">
     </div>
   </div>
-  <div id="localStatus"></div>
+
+  <!-- ブラウザ保存(複数・タイトル付き) -->
+  <div class="card">
+    <h2>💾 保存データ(このブラウザ)</h2>
+    <p class="card-sub">入力中の内容にタイトルを付けて、このブラウザに何件でも保存できます。一覧から選んで読み込めます。</p>
+    <div class="save-controls">
+      <button id="saveLocalBtn" type="button">＋ 現在の内容を保存</button>
+      <select id="savedList"><option value="">― 保存データを選択 ―</option></select>
+      <button id="loadLocalBtn" type="button">↩ 読込</button>
+      <button id="clearLocalBtn" type="button">🗑 削除</button>
+    </div>
+    <div id="localStatus"></div>
+  </div>
 
   <!-- 担当者・会社設定 -->
   <div class="card">
@@ -1056,32 +1073,81 @@ function importJson(file){
 }
 
 /* ============================================================
-   ブラウザ(localStorage)へ保存 / 呼び出し / 消去
+   ブラウザ(localStorage)へ複数保存 / 一覧 / 読込 / 削除
+   各保存 = { id, title, savedAt, data }
 ============================================================ */
-const DEAL_KEY = "viviDealDraft";
+const DEALS_KEY = "viviDeals";
+function getDeals(){
+  try { return JSON.parse(localStorage.getItem(DEALS_KEY)) || []; }
+  catch (e) { return []; }
+}
+function setDeals(arr){ localStorage.setItem(DEALS_KEY, JSON.stringify(arr)); }
+
 function flashLocal(msg){
   const el = $("localStatus");
   el.textContent = msg;
   el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2400);
+  setTimeout(() => el.classList.remove("show"), 2600);
 }
+
+// 保存一覧(プルダウン)を再構築。新しい順に表示
+function refreshSavedList(selectId){
+  const sel = $("savedList");
+  const deals = getDeals();
+  let html = '<option value="">― 保存データを選択(' + deals.length + '件)―</option>';
+  html += deals.slice().reverse()
+    .map(d => `<option value="${d.id}">${esc(d.title)}(${esc(d.savedAt)})</option>`).join("");
+  sel.innerHTML = html;
+  if (selectId != null) sel.value = String(selectId);
+}
+
+// 現在の内容にタイトルを付けて保存(空欄ならお客様名＋物件名)
 function saveLocal(){
-  try {
-    localStorage.setItem(DEAL_KEY, JSON.stringify(collectDeal()));
-    flashLocal("💾 この内容をブラウザに保存しました");
-  } catch (e) { alert("ブラウザへの保存に失敗しました:" + e.message); }
+  const cust = val("customerName"), prop = val("propertyName");
+  let def = [cust, prop].filter(Boolean).join(" ").trim();
+  if (!def) def = "無題(" + new Date().toLocaleString("ja-JP") + ")";
+  let title = prompt("保存するタイトルを入力してください。\n(空欄のままなら「お客様名＋物件名」で保存します)", def);
+  if (title === null) return;                 // キャンセル
+  title = title.trim() || def;                // 空欄ならデフォルト
+  const deals = getDeals();
+  const savedAt = new Date().toLocaleString("ja-JP");
+  const data = collectDeal();
+  const idx = deals.findIndex(d => d.title === title);
+  let savedId;
+  if (idx >= 0) {
+    if (!confirm("同じタイトル「" + title + "」が既にあります。上書きしますか?\n(別の保存として残すには、キャンセルしてタイトルを変えてください)")) return;
+    deals[idx] = { ...deals[idx], savedAt, data };
+    savedId = deals[idx].id;
+  } else {
+    savedId = Date.now();
+    deals.push({ id: savedId, title, savedAt, data });
+  }
+  setDeals(deals);              // 先に保存してから一覧を更新(最新が反映されるように)
+  refreshSavedList(savedId);
+  flashLocal("💾 「" + title + "」を保存しました");
 }
+
+// 一覧で選択中の保存データを読み込む
 function loadLocal(){
-  const raw = localStorage.getItem(DEAL_KEY);
-  if (!raw) { alert("このブラウザに保存されたデータはありません。"); return; }
-  try { applyDeal(JSON.parse(raw)); flashLocal("↩ 保存した内容を呼び出しました"); }
-  catch (e) { alert("読み込みに失敗しました:" + e.message); }
+  const id = $("savedList").value;
+  if (!id) { alert("読み込む保存データを一覧から選択してください。"); return; }
+  const d = getDeals().find(x => String(x.id) === String(id));
+  if (!d) { alert("選択した保存データが見つかりません。"); return; }
+  applyDeal(d.data);
+  flashLocal("↩ 「" + d.title + "」を読み込みました");
 }
+
+// 一覧で選択中の保存データを削除する
 function clearLocal(){
-  if (!localStorage.getItem(DEAL_KEY)) { alert("このブラウザに保存されたデータはありません。"); return; }
-  if (!confirm("このブラウザに保存した内容を消去しますか?(入力中のフォームはそのままです)")) return;
-  localStorage.removeItem(DEAL_KEY);
-  flashLocal("🗑 ブラウザの保存内容を消去しました");
+  const id = $("savedList").value;
+  if (!id) { alert("削除する保存データを一覧から選択してください。"); return; }
+  const deals = getDeals();
+  const d = deals.find(x => String(x.id) === String(id));
+  if (!d) return;
+  if (!confirm("「" + d.title + "」を削除しますか?(入力中のフォームはそのままです)")) return;
+  setDeals(deals.filter(x => String(x.id) !== String(id)));
+  refreshSavedList();
+  flashLocal("🗑 「" + d.title + "」を削除しました");
 }
 
 /* ============================================================
@@ -1334,7 +1400,8 @@ function init(){
     if (file) handlePdf(file);
   });
 
-  // ブラウザ保存
+  // ブラウザ保存(複数・タイトル付き)
+  refreshSavedList();
   $("saveLocalBtn").addEventListener("click", saveLocal);
   $("loadLocalBtn").addEventListener("click", loadLocal);
   $("clearLocalBtn").addEventListener("click", clearLocal);
