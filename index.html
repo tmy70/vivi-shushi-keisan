@@ -137,13 +137,12 @@ input.extract-miss{border-color:#e0b400;background:#fffbe0;}
 .custom-price-area{margin-top:16px;border-top:1px dashed var(--orange-line);padding-top:14px;}
 .custom-price-title{font-size:12px;font-weight:bold;color:var(--brown);margin-bottom:8px;}
 #customPriceRows .cprice-row{
-  display:grid;grid-template-columns:1fr 150px 96px 34px;gap:8px;align-items:center;margin-bottom:8px;
+  display:grid;grid-template-columns:1fr 170px 34px;gap:8px;align-items:center;margin-bottom:8px;
 }
 #customPriceRows .cprice-row input{
   border:1.5px solid var(--orange-line);border-radius:8px;padding:8px 10px;background:var(--cream);
 }
 #customPriceRows .cprice-row input[type=number]{text-align:right;}
-.cprice-kaitori-wrap{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ink-soft);white-space:nowrap;}
 #customPriceRows .cprice-row .del-btn{
   background:var(--orange-pale);border:none;border-radius:8px;height:36px;color:var(--red);font-weight:bold;
 }
@@ -391,7 +390,6 @@ body.preview #previewMode{display:block;}
     border:1px solid var(--orange-line);border-radius:8px;padding:8px;}
   #customPriceRows .cprice-row .cprice-label{flex:1 1 100%;}
   #customPriceRows .cprice-row .unit-wrap{flex:1 1 130px;}
-  .cprice-kaitori-wrap{flex:0 0 auto;}
   #customPriceRows .cprice-row .del-btn{flex:0 0 auto;margin-left:auto;width:42px;}
   #previewBtn{width:100%;padding:14px 20px;font-size:16px;}
   #previewToolbar{padding:9px 12px;}
@@ -582,7 +580,7 @@ body.preview #previewMode{display:block;}
       <div class="custom-price-title">＋ 価格プランの追加(自由記載)</div>
       <div id="customPriceRows"></div>
       <button id="addPriceBtn" type="button">＋ 価格プランを追加</button>
-      <p class="hint" style="margin-top:8px;">「下限価格」「超チャレンジ価格」など、独自の価格プランを自由に追加できます。追加した列も比較表に反映され、<b>価格の高い順に自動で並びます</b>(「手数料0円」にチェックすると買取と同じく仲介手数料を0円で計算します)。</p>
+      <p class="hint" style="margin-top:8px;">「下限価格」「超チャレンジ価格」など、独自の価格プランを自由に追加できます。追加した列も比較表に反映され、<b>価格の高い順に自動で並びます</b>(仲介手数料は通常どおり計算されます。手数料のかからない買取は上の「買取価格」欄をご利用ください)。</p>
     </div>
   </div>
 
@@ -708,12 +706,11 @@ function getExpenses(){
   })).filter(e => e.name || e.amount > 0);
 }
 
-// 自由記載の価格プラン(金額は万円。labelは任意)
+// 自由記載の価格プラン(金額は万円。labelは任意。通常の仲介手数料で計算)
 function getCustomPlans(){
   return [...document.querySelectorAll("#customPriceRows .cprice-row")].map(row => ({
     label: row.querySelector(".cprice-label").value.trim(),
     amount: parseFloat(row.querySelector(".cprice-amount").value) || 0,
-    kaitori: row.querySelector(".cprice-kaitori").checked,
   })).filter(c => c.amount > 0);
 }
 
@@ -727,8 +724,8 @@ function getState(){
     priceTeian: num("priceTeian") * 10000,
     priceSatei: num("priceSatei") * 10000,
     priceKaitori: num("priceKaitori") * 10000,
-    // 自由記載プラン(円に変換)
-    customPlans: getCustomPlans().map(c => ({ label: c.label || "価格", price: c.amount * 10000, kaitori: c.kaitori })),
+    // 自由記載プラン(円に変換。常に通常の仲介手数料で計算)
+    customPlans: getCustomPlans().map(c => ({ label: c.label || "価格", price: c.amount * 10000, kaitori: false })),
     discount: $("discountToggle").checked,
     expenses: getExpenses(),
     loanBalance: num("loanBalance"),
@@ -830,18 +827,16 @@ function addExpenseRow(preset, amount, exempt){
 /* ============================================================
    自由記載の価格プラン 行UI
 ============================================================ */
-function addPriceRow(label, amount, kaitori){
+function addPriceRow(label, amount){
   const row = document.createElement("div");
   row.className = "cprice-row";
   row.innerHTML = `
     <input type="text" class="cprice-label" placeholder="プラン名(例:下限価格・超チャレンジ価格)">
     <div class="unit-wrap"><input type="number" class="cprice-amount" min="0" placeholder="0"><span class="unit">万円</span></div>
-    <label class="cprice-kaitori-wrap"><input type="checkbox" class="cprice-kaitori">手数料0円</label>
     <button type="button" class="del-btn" title="この価格プランを削除">✕</button>`;
   row.querySelector(".del-btn").addEventListener("click", () => { row.remove(); renderCalcSummary(); });
   if (label != null) row.querySelector(".cprice-label").value = label;
   if (amount) row.querySelector(".cprice-amount").value = amount;
-  row.querySelector(".cprice-kaitori").checked = !!kaitori;
   $("customPriceRows").appendChild(row);
   return row;
 }
@@ -1116,7 +1111,7 @@ function applyDeal(d){
   (d.expenses || []).forEach(e => addExpenseRow(e.name, e.amount, e.kaitoriExempt));
   if (!d.expenses || !d.expenses.length) addExpenseRow();
   $("customPriceRows").innerHTML = "";
-  (d.customPlans || []).forEach(c => addPriceRow(c.label, c.amount, c.kaitori));
+  (d.customPlans || []).forEach(c => addPriceRow(c.label, c.amount));
   renderCalcSummary();
 }
 
