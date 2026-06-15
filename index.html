@@ -133,6 +133,22 @@ input.extract-miss{border-color:#e0b400;background:#fffbe0;}
 .toggle-label{font-size:14px;font-weight:bold;}
 #discountStateText{color:var(--orange);}
 
+/* 自由記載の価格プラン */
+.custom-price-area{margin-top:16px;border-top:1px dashed var(--orange-line);padding-top:14px;}
+.custom-price-title{font-size:12px;font-weight:bold;color:var(--brown);margin-bottom:8px;}
+#customPriceRows .cprice-row{
+  display:grid;grid-template-columns:1fr 150px 96px 34px;gap:8px;align-items:center;margin-bottom:8px;
+}
+#customPriceRows .cprice-row input{
+  border:1.5px solid var(--orange-line);border-radius:8px;padding:8px 10px;background:var(--cream);
+}
+#customPriceRows .cprice-row input[type=number]{text-align:right;}
+.cprice-kaitori-wrap{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ink-soft);white-space:nowrap;}
+#customPriceRows .cprice-row .del-btn{
+  background:var(--orange-pale);border:none;border-radius:8px;height:36px;color:var(--red);font-weight:bold;
+}
+#addPriceBtn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:bold;}
+
 /* 諸経費 */
 #expenseRows .exp-row{
   display:grid;grid-template-columns:170px 1fr 140px 92px 34px;gap:8px;align-items:center;margin-bottom:8px;
@@ -371,6 +387,12 @@ body.preview #previewMode{display:block;}
   #expenseRows .exp-row .exp-amount{flex:1 1 130px;}
   #expenseRows .exp-row .kaitori-exempt{flex:0 0 auto;}
   #expenseRows .exp-row .del-btn{flex:0 0 auto;margin-left:auto;width:42px;}
+  #customPriceRows .cprice-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+    border:1px solid var(--orange-line);border-radius:8px;padding:8px;}
+  #customPriceRows .cprice-row .cprice-label{flex:1 1 100%;}
+  #customPriceRows .cprice-row .unit-wrap{flex:1 1 130px;}
+  .cprice-kaitori-wrap{flex:0 0 auto;}
+  #customPriceRows .cprice-row .del-btn{flex:0 0 auto;margin-left:auto;width:42px;}
   #previewBtn{width:100%;padding:14px 20px;font-size:16px;}
   #previewToolbar{padding:9px 12px;}
   #previewToolbar button{flex:1 1 auto;}
@@ -554,6 +576,14 @@ body.preview #previewMode{display:block;}
         <div class="unit-wrap"><input type="number" id="priceKaitori" min="0"><span class="unit">万円</span></div>
       </div>
     </div>
+
+    <!-- 自由記載の価格プラン -->
+    <div class="custom-price-area">
+      <div class="custom-price-title">＋ 価格プランの追加(自由記載)</div>
+      <div id="customPriceRows"></div>
+      <button id="addPriceBtn" type="button">＋ 価格プランを追加</button>
+      <p class="hint" style="margin-top:8px;">「下限価格」「超チャレンジ価格」など、独自の価格プランを自由に追加できます。追加した列も比較表に反映され、<b>価格の高い順に自動で並びます</b>(「手数料0円」にチェックすると買取と同じく仲介手数料を0円で計算します)。</p>
+    </div>
   </div>
 
   <!-- STEP2 手数料 -->
@@ -678,6 +708,15 @@ function getExpenses(){
   })).filter(e => e.name || e.amount > 0);
 }
 
+// 自由記載の価格プラン(金額は万円。labelは任意)
+function getCustomPlans(){
+  return [...document.querySelectorAll("#customPriceRows .cprice-row")].map(row => ({
+    label: row.querySelector(".cprice-label").value.trim(),
+    amount: parseFloat(row.querySelector(".cprice-amount").value) || 0,
+    kaitori: row.querySelector(".cprice-kaitori").checked,
+  })).filter(c => c.amount > 0);
+}
+
 function getState(){
   return {
     customerName: val("customerName"),
@@ -688,6 +727,8 @@ function getState(){
     priceTeian: num("priceTeian") * 10000,
     priceSatei: num("priceSatei") * 10000,
     priceKaitori: num("priceKaitori") * 10000,
+    // 自由記載プラン(円に変換)
+    customPlans: getCustomPlans().map(c => ({ label: c.label || "価格", price: c.amount * 10000, kaitori: c.kaitori })),
     discount: $("discountToggle").checked,
     expenses: getExpenses(),
     loanBalance: num("loanBalance"),
@@ -700,17 +741,22 @@ function getStaff(){
   return s;
 }
 
-// プラン一覧(入力のある価格のみ・最大4列)
+// プラン一覧(入力のある価格のみ)。固定4プラン＋自由記載プランを合わせ、
+// 仲介プランは価格の高い順に並べ、買取(手数料0円)プランは末尾にまとめる
 function buildPlans(st){
   const expTotalAll = st.expenses.reduce((s,e)=>s+e.amount, 0);
   const expTotalKaitori = st.expenses.filter(e=>!e.kaitoriExempt).reduce((s,e)=>s+e.amount, 0);
   const defs = [
-    { key:"challenge", label:"チャレンジ価格", price: st.priceChallenge, kaitori:false },
-    { key:"teian",     label:"売出提案価格",   price: st.priceTeian,     kaitori:false, rec:true },
-    { key:"satei",     label:"査定価格",       price: st.priceSatei,     kaitori:false },
-    { key:"kaitori",   label:"買取価格",       price: st.priceKaitori,   kaitori:true  },
+    { label:"チャレンジ価格", price: st.priceChallenge, kaitori:false },
+    { label:"売出提案価格",   price: st.priceTeian,     kaitori:false },
+    { label:"査定価格",       price: st.priceSatei,     kaitori:false },
+    { label:"買取価格",       price: st.priceKaitori,   kaitori:true  },
+    ...(st.customPlans || []),   // 自由記載プラン {label, price, kaitori}
   ];
-  return defs.filter(d => d.price > 0).map(d => {
+  const valid = defs.filter(d => d.price > 0);
+  const normal = valid.filter(d => !d.kaitori).sort((a,b) => b.price - a.price); // 高い順
+  const buyback = valid.filter(d => d.kaitori);                                  // 買取は末尾
+  return [...normal, ...buyback].map(d => {
     const fee = calcBrokerageFee(d.price, st.discount, d.kaitori);
     const stamp = calcStampTax(d.price);
     const exp = d.kaitori ? expTotalKaitori : expTotalAll;
@@ -778,6 +824,25 @@ function addExpenseRow(preset, amount, exempt){
   if (amount) row.querySelector(".exp-amount").value = amount;
   exemptI.checked = !!exempt;
   $("expenseRows").appendChild(row);
+  return row;
+}
+
+/* ============================================================
+   自由記載の価格プラン 行UI
+============================================================ */
+function addPriceRow(label, amount, kaitori){
+  const row = document.createElement("div");
+  row.className = "cprice-row";
+  row.innerHTML = `
+    <input type="text" class="cprice-label" placeholder="プラン名(例:下限価格・超チャレンジ価格)">
+    <div class="unit-wrap"><input type="number" class="cprice-amount" min="0" placeholder="0"><span class="unit">万円</span></div>
+    <label class="cprice-kaitori-wrap"><input type="checkbox" class="cprice-kaitori">手数料0円</label>
+    <button type="button" class="del-btn" title="この価格プランを削除">✕</button>`;
+  row.querySelector(".del-btn").addEventListener("click", () => { row.remove(); renderCalcSummary(); });
+  if (label != null) row.querySelector(".cprice-label").value = label;
+  if (amount) row.querySelector(".cprice-amount").value = amount;
+  row.querySelector(".cprice-kaitori").checked = !!kaitori;
+  $("customPriceRows").appendChild(row);
   return row;
 }
 
@@ -1032,6 +1097,7 @@ function collectDeal(){
     discount: $("discountToggle").checked,
     loanBalance: num("loanBalance"),
     expenses: getExpenses(),
+    customPlans: getCustomPlans(),   // {label, amount(万円), kaitori}
   };
 }
 function applyDeal(d){
@@ -1049,6 +1115,8 @@ function applyDeal(d){
   $("expenseRows").innerHTML = "";
   (d.expenses || []).forEach(e => addExpenseRow(e.name, e.amount, e.kaitoriExempt));
   if (!d.expenses || !d.expenses.length) addExpenseRow();
+  $("customPriceRows").innerHTML = "";
+  (d.customPlans || []).forEach(c => addPriceRow(c.label, c.amount, c.kaitori));
   renderCalcSummary();
 }
 
@@ -1386,6 +1454,7 @@ function init(){
     renderCalcSummary();
   });
   $("addExpenseBtn").addEventListener("click", () => addExpenseRow());
+  $("addPriceBtn").addEventListener("click", () => addPriceRow());
   $("saveStaffBtn").addEventListener("click", saveStaff);
 
   // 査定書PDF:ファイル選択 + ドラッグ&ドロップ
