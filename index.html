@@ -137,8 +137,10 @@ input.extract-miss{border-color:#e0b400;background:#fffbe0;}
 .custom-price-area{margin-top:16px;border-top:1px dashed var(--orange-line);padding-top:14px;}
 .custom-price-title{font-size:12px;font-weight:bold;color:var(--brown);margin-bottom:8px;}
 #customPriceRows .cprice-row{
-  display:grid;grid-template-columns:1fr 170px 34px;gap:8px;align-items:center;margin-bottom:8px;
+  display:grid;grid-template-columns:1fr 150px 36px;gap:8px;align-items:center;margin-bottom:8px;
 }
+#customPriceRows .cprice-row > *{min-width:0;}          /* 列幅を超えてはみ出さない */
+#customPriceRows .cprice-row .unit-wrap input{min-width:0;}
 #customPriceRows .cprice-row input{
   border:1.5px solid var(--orange-line);border-radius:8px;padding:8px 10px;background:var(--cream);
 }
